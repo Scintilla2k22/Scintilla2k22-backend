@@ -12,21 +12,30 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
+from django.conf import settings
+from.models import *
 
+User = settings.AUTH_USER_MODEL
 
 # Create your views here.
 
-class MedicalStaffRegistrationView(APIView):
 
+class MedicalStaffRegistrationView(APIView):
+   
     def post(self, request, *args, **kwargs):        
+        staff_category_dict = {
+        "D" : "DOCTOR",
+        "N" : "NURSE"
+        }
         response = dict()
         serializer = MedicalStaffRegistrationSerializers(data=request.data)
         if serializer.is_valid():              
             serializer.save() 
-            user = get_object_or_404(User, username=serializer.validated_data["username"])               
+            user = get_object_or_404(CustomUser, username=serializer.validated_data["username"])               
             response["data"] = serializer.data
             token, created = Token.objects.get_or_create(user=user)
             response["data"]["token"] = token.key
+            response["data"]["staff_category"] = staff_category_dict[str(serializer.validated_data["staff_categ"])]
             response["status"] = status.HTTP_201_CREATED
             response["msg"] = "staff member registered successfully"
             return Response(response)
@@ -42,12 +51,12 @@ class LoginUserView(ObtainAuthToken):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            profile = Profile.objects.get(user=user)
+            profile = MedicalStaffProfile.objects.get(user=user)
             token, created = Token.objects.get_or_create(user=user)
             response['data'] = {}
             response['data']['token'] = token.key
-            response['data']['user_id'] = profile.id
-            response['data']['username'] = user.username
+            # response['data']['staff_id'] = profile.id
+            response['data']['staff_id'] = user.username
             response['data']['email'] = user.email
             response['status'] = status.HTTP_200_OK
             response['msg'] = "You are Successfully logged in"           
@@ -73,7 +82,7 @@ class MedicalStaffProfileView(APIView):
                 return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
     def get(self, request, *args, **kwargs):
-        user = get_object_or_404(User, username=request.user.username)
+        user = get_object_or_404(CustomUser, username=request.user.username)
         if Profile.objects.filter(user=user).exists():
             user_profile_qs = Profile.objects.get(user=user)
             serializer = ProfileSerializers(user_profile_qs, many=False)
@@ -88,29 +97,29 @@ class MedicalStaffProfileView(APIView):
 
 
    
-class ChangePasswordView(generics.GenericAPIView):
-        serializer_class = ChangePasswordSerializer
-        model = User
-        permission_classes = (IsAuthenticated,)
+# class ChangePasswordView(generics.GenericAPIView):
+#         serializer_class = ChangePasswordSerializer
+#         model = CustomUser
+#         permission_classes = (IsAuthenticated,)
 
-        def get_object(self, queryset=None):
-            obj = self.request.user
-            return obj
+#         def get_object(self, queryset=None):
+#             obj = self.request.user
+#             return obj
 
-        def patch(self, request, *args, **kwargs):
-            self.object = self.get_object()
-            serializer = self.get_serializer(data=request.data)
+#         def patch(self, request, *args, **kwargs):
+#             self.object = self.get_object()
+#             serializer = self.get_serializer(data=request.data)
 
-            if serializer.is_valid():             
-                if not self.object.check_password(serializer.data.get("current_password")):
-                    return Response({"msg": "Check Your password correctly",'status': status.HTTP_400_BAD_REQUEST,})            
-                self.object.set_password(serializer.data.get("new_password"))
-                self.object.save()
-                response = {
-                    'status': status.HTTP_200_OK,
-                    'msg': 'Password updated successfully',
+#             if serializer.is_valid():             
+#                 if not self.object.check_password(serializer.data.get("current_password")):
+#                     return Response({"msg": "Check Your password correctly",'status': status.HTTP_400_BAD_REQUEST,})            
+#                 self.object.set_password(serializer.data.get("new_password"))
+#                 self.object.save()
+#                 response = {
+#                     'status': status.HTTP_200_OK,
+#                     'msg': 'Password updated successfully',
                     
-                }
-                return Response(response)
+#                 }
+#                 return Response(response)
 
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
