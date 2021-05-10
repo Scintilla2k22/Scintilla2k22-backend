@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 # from django.contrib.auth.models import User
 from user.models import *
 from django.conf import settings
-
+from health.models import *
 
 # Create your models here.
 
@@ -20,32 +20,26 @@ class PatientProfile(TimeStamped):
     ("O", ("OTHERS"))
     )
     
-    user = models.ForeignKey(CustomUser, on_delete = models.CASCADE )
-    icmr = models.CharField(max_length=50, blank=False, null=False)
+    PATIENT_STATUS = (
+        ("A", ("Active")),
+        ("R", ("Recovered")),
+        ("M", ("Migrated"))
+    )
+    
     name = models.CharField(max_length=50, blank=False, null=False)
+    icmr = models.CharField(max_length=50, blank=False, null=False, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=True, blank=True)
     age  = models.IntegerField(null=True, blank=True)
-    contact_1 = models.IntegerField(null=True, blank=True)
-    contact_2 = models.IntegerField(null=True, blank=True)
-    aadhar_number = models.IntegerField(null=True, blank=True)
+    contact_number = models.IntegerField(null=True, blank=True)    
     address = models.TextField(null=True, blank=True)
+    patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
+    covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
+    
+
 
     def __str__(self):
-        return "Patient : {0}, name : {1}".format(self.icmr, self.name)
+        return "Patient ID : {0}, name : {1} , status : {2}".format(self.icmr, self.name, self.get_patient_status_display())
 
-
-
-
-@receiver(post_save, sender=CustomUser)
-def create_profile(sender, instance=None, created=False, **kwargs):
-    if  instance.is_patient and created:        
-        patient = PatientProfile( user=instance, icmr=instance.username)
-        patient.save()
-
-@receiver(post_delete, sender=PatientProfile)
-def delete_user(sender, instance= None, **kwargs):
-    user = get_object_or_404(User, username=str(instance.user))
-    user.delete()
 
 
 

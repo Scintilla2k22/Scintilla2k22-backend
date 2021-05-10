@@ -10,14 +10,33 @@ User = settings.AUTH_USER_MODEL
 # Create your models here.
 
 
+
+
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=50, unique=True, blank=False, null=False)   
     is_doctor = models.BooleanField(default=False, blank=False, null=False)
-    is_nurse = models.BooleanField(default=False, blank=False, null=False)
-    is_patient = models.BooleanField(default=False, blank=False, null=False)
+    is_nurse = models.BooleanField(default=False, blank=False, null=False)        
     is_admin = models.BooleanField(default=False, blank=False, null=False)
-
     
+    @property
+    def is_staff_type(self):
+        if self.is_nurse:
+            staff = StaffCategory.objects.filter(title="N")
+            if staff.exists():
+                return staff.first()
+            else:
+                create_staff = StaffCategory(title="N", slug="NURSE")
+                create_staff.save()
+                return create_staff
+        elif self.is_doctor:
+            staff = StaffCategory.objects.filter(title="D")
+            if staff.exists():
+                return staff.first()
+            else:
+                create_staff = StaffCategory(title="D", slug="DOCTOR")
+                create_staff.save()
+                return create_staff
+        return None
          
 # User = settings.AUTH_USER_MODEL
 
@@ -31,7 +50,8 @@ class TimeStamped(models.Model):
 class StaffCategory(models.Model):
     STAFF_CATEGORY = (
         ("D", ("DOCTOR")),
-        ("N", ("NURSE"))
+        ("N", ("NURSE")),
+        
     )
     title = models.CharField(max_length=30, choices=STAFF_CATEGORY)
     slug = models.SlugField()
@@ -48,7 +68,7 @@ class MedicalStaffProfile(TimeStamped):
     )
 
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(CustomUser, on_delete = models.CASCADE )
+    user = models.OneToOneField(CustomUser, on_delete = models.CASCADE )
     staff_category = models.ForeignKey(StaffCategory, on_delete=models.CASCADE, null=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=True, blank=True)
     contact_number = models.IntegerField(blank=True, null=True)
@@ -72,10 +92,30 @@ class MedicalStaffProfile(TimeStamped):
 def create_profile(sender, instance=None, created=False, **kwargs):
     # print(created, "\n\n\n\n\n")
     # staff_query = MedicalStaffProfile.objects.filter(user=instance)
-    if instance.is_staff and  created  :
-        MedicalStaffProfile.objects.create(user=instance)
+    if instance.is_staff    :
+        if created:
+            MedicalStaffProfile.objects.create(user=instance)
+        elif not created:
+            staff = MedicalStaffProfile.objects.filter(user=instance)
+            if staff.exists():
+                staff = staff.first()
+                staff_type = instance.is_staff_type
+                if staff_type is not None:
+                    staff.staff_category = staff_type                    
+                else:
+                    staff.staff_category = None
+                staff.save()
+            else:
+                new_staff = MedicalStaffProfile(user=instance)
+                staff_type = instance.is_staff_type
+                if staff_type is not None:
+                    new_staff.staff_category = staff_type                    
+                else:
+                    new_staff.staff_category = None
+                new_staff.save()    
 
 
+                
 @receiver(post_delete, sender=MedicalStaffProfile)
 def delete_user(sender, instance= None, **kwargs):
     user = get_object_or_404(CustomUser, username=str(instance.user))

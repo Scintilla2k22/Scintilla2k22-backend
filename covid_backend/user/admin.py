@@ -17,7 +17,7 @@ class CustomUserAdmin(UserAdmin):
                     'is_admin',
                     'is_doctor',
                     'is_nurse',
-                    'is_patient'
+                    
                 )
             }
         )
