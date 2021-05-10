@@ -38,12 +38,9 @@ class PatientProfile(TimeStamped):
 
 @receiver(post_save, sender=CustomUser)
 def create_profile(sender, instance=None, created=False, **kwargs):
-    if  instance.is_patient:
-        # PatientProfile.objects.create(user=instance)
-        print(created, "\n\n\n\n\n")
-        if not created:
-            patient = PatientProfile( user=instance, icmr=instance.username)
-            patient.save()
+    if  instance.is_patient and created:        
+        patient = PatientProfile( user=instance, icmr=instance.username)
+        patient.save()
 
 @receiver(post_delete, sender=PatientProfile)
 def delete_user(sender, instance= None, **kwargs):
