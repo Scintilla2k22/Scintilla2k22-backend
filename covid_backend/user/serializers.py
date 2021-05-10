@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from .models import *
-
+from .views import *
 # from django.conf import settings
 # User = settings.AUTH_USER_MODEL
 
@@ -60,7 +60,10 @@ class MedicalStaffProfileSerializers(serializers.ModelSerializer):
         fields = ("first_name", "last_name","email", "staff_category", "gender", "contact_number", "address")
 
     def save(self, request_user):
-        print(request_user)
+        staff_category_dict = {
+        "D" : "DOCTOR",
+        "N" : "NURSE"
+        }              
         user = get_object_or_404(CustomUser, username=str(request_user))
         email = self.validated_data["email"]
         first_name = self.validated_data["first_name"]
@@ -68,18 +71,30 @@ class MedicalStaffProfileSerializers(serializers.ModelSerializer):
         user.first_name = first_name
         user.last_name = last_name
         user_email_validator = CustomUser.objects.filter(email=self.validated_data["email"])
+        
         if user_email_validator.exists() and user_email_validator.first().username != str(user) :
             raise serializers.ValidationError({"email": "Email address is already taken."})
         user.email = email
         user.save()
+    
         if MedicalStaffProfile.objects.filter(user=user).exists():
-            MedicalStaffProfile = MedicalStaffProfile.objects.get(user=user)
+            staff = MedicalStaffProfile.objects.get(user=user)
         else:
-            MedicalStaffProfile = MedicalStaffProfile( user= user)
-        staff_catg_model = get_object_or_404(StaffCategory, slug=self.validated_data["staff_category"])
-        MedicalStaffProfile.staff_category = staff_catg_model
-        MedicalStaffProfile.contact_number = self.validated_data["contact_number"]
-        MedicalStaffProfile.gender = self.validated_data["gender"]
-        MedicalStaffProfile.address = self.validated_data["address"]
-        MedicalStaffProfile.save()
-        return MedicalStaffProfile
+            staff = MedicalStaffProfile( user= user)
+
+        # StaffCategory should be created        
+        staff_catg_model = get_object_or_404(StaffCategory, slug=staff_category_dict[self.validated_data["staff_category"]])
+        staff.staff_category = staff_catg_model
+        staff.contact_number = self.validated_data["contact_number"]
+        staff.gender = self.validated_data["gender"]
+        staff.address = self.validated_data["address"]
+        staff.save()
+       
+        return staff
+
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    model = CustomUser
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

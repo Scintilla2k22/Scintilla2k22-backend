@@ -17,7 +17,8 @@ class CustomUser(AbstractUser):
     is_patient = models.BooleanField(default=False, blank=False, null=False)
     is_admin = models.BooleanField(default=False, blank=False, null=False)
 
-
+    
+         
 # User = settings.AUTH_USER_MODEL
 
 class TimeStamped(models.Model):

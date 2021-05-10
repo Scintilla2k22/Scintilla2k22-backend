@@ -54,10 +54,12 @@ class LoginUserView(ObtainAuthToken):
             profile = MedicalStaffProfile.objects.get(user=user)
             token, created = Token.objects.get_or_create(user=user)
             response['data'] = {}
-            response['data']['token'] = token.key
-            # response['data']['staff_id'] = profile.id
-            response['data']['staff_id'] = user.username
-            response['data']['email'] = user.email
+            response['data']['token'] = token.key        
+            response['data']['staff_id'] = user.username       
+            if user.is_doctor:
+                response['data']['staff_category'] = "DOCTOR"    
+            elif user.is_nurse:
+                response['data']['staff_category'] = 'NURSE'
             response['status'] = status.HTTP_200_OK
             response['msg'] = "You are Successfully logged in"           
             return Response(response)
@@ -76,20 +78,20 @@ class MedicalStaffProfileView(APIView):
             serializer = MedicalStaffProfileSerializers(data=request.data)
             
             if serializer.is_valid():
-                serializer.save(request.user)
+                serializer.save(request.user.username)
                 return Response({"data":request.data, "status":status.HTTP_201_CREATED, "msg" : "Profile created." })
             else:
                 return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(CustomUser, username=request.user.username)
-        if Profile.objects.filter(user=user).exists():
-            user_profile_qs = Profile.objects.get(user=user)
-            serializer = ProfileSerializers(user_profile_qs, many=False)
+        if MedicalStaffProfile.objects.filter(user=user).exists():
+            user_profile_qs = MedicalStaffProfile.objects.get(user=user)
+            serializer = MedicalStaffProfileSerializers(user_profile_qs, many=False)
             data =   {'data': serializer.data, 'status': status.HTTP_200_OK }
             data["data"]["staff id"] = user.username
             data["data"]["email"] = user.email
-            data["data"]["name"] = str(user.first_name + user.last_name)                         
+            data["data"]["name"] = str(user.first_name +" "+ user.last_name)                         
             return Response(data)
         else:
             return Response({'data': "Profile doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
@@ -97,29 +99,29 @@ class MedicalStaffProfileView(APIView):
 
 
    
-# class ChangePasswordView(generics.GenericAPIView):
-#         serializer_class = ChangePasswordSerializer
-#         model = CustomUser
-#         permission_classes = (IsAuthenticated,)
+class ChangePasswordView(generics.GenericAPIView):
+        serializer_class = ChangePasswordSerializer
+        model = CustomUser
+        permission_classes = (IsAuthenticated,)
 
-#         def get_object(self, queryset=None):
-#             obj = self.request.user
-#             return obj
+        def get_object(self, queryset=None):
+            obj = self.request.user
+            return obj
 
-#         def patch(self, request, *args, **kwargs):
-#             self.object = self.get_object()
-#             serializer = self.get_serializer(data=request.data)
+        def patch(self, request, *args, **kwargs):
+            self.object = self.get_object()
+            serializer = self.get_serializer(data=request.data)
 
-#             if serializer.is_valid():             
-#                 if not self.object.check_password(serializer.data.get("current_password")):
-#                     return Response({"msg": "Check Your password correctly",'status': status.HTTP_400_BAD_REQUEST,})            
-#                 self.object.set_password(serializer.data.get("new_password"))
-#                 self.object.save()
-#                 response = {
-#                     'status': status.HTTP_200_OK,
-#                     'msg': 'Password updated successfully',
+            if serializer.is_valid():             
+                if not self.object.check_password(serializer.data.get("current_password")):
+                    return Response({"msg": "Check Your password correctly",'status': status.HTTP_400_BAD_REQUEST,})            
+                self.object.set_password(serializer.data.get("new_password"))
+                self.object.save()
+                response = {
+                    'status': status.HTTP_200_OK,
+                    'msg': 'Password updated successfully',
                     
-#                 }
-#                 return Response(response)
+                }
+                return Response(response)
 
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -47,6 +47,7 @@ class PatientProfileView(APIView):
                 return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
     def get(self, request, *args, **kwargs):
+      
         user = get_object_or_404(CustomUser, username=request.user.username)
         if PatientProfile.objects.filter(user=user).exists():
             patient_profile = PatientProfile.objects.get(user=user)
@@ -54,7 +55,8 @@ class PatientProfileView(APIView):
             data =   {'data': serializer.data, 'status': status.HTTP_200_OK }
             data["data"]["ICMR ID"] = user.username
             data["data"]["name"] = patient_profile.name
-            data["data"]["gender"] = patient_profile.age
+            data["data"]["age"] = patient_profile.age
+            data["data"]["gender"] = patient_profile.gender
             data["data"]["contact_1"] = patient_profile.contact_1
             data["data"]["contact_2"] = patient_profile.contact_2
             data["data"]["aadhar_number"] = patient_profile.aadhar_number
