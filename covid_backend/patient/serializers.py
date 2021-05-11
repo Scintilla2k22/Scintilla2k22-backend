@@ -44,5 +44,24 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
         patient.address = self.validated_data["address"]            
-        patient.save()      
+        patient.save()  
+            
         return patient
+
+
+class PatientBedSerializers(serializers.ModelSerializer):
+    patient_id = serializers.CharField(write_only=True)
+    class Meta:
+        model = PatientBed
+        fields = ('patient_id', 'bed_number', 'bed_category')
+
+    def save(self):
+        patient = get_object_or_404(PatientProfile, patient_id = self.validated_data["patient_id"] )
+
+        bed = PatientBed(patient = patient)
+        bed.bed_category = self.validated_data["bed_category"]
+        bed.bed_number = self.validated_data["bed_number"]
+        bed.bed_status = True
+        bed.save()
+
+        return bed

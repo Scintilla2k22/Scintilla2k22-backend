@@ -4,27 +4,6 @@ from user.models import *
 from patient.models import *
 # Create your models here.
 
-class Bed(TimeStamped):
-    BED_CAT = (
-        ("1", ("General Bed")),
-        ("2", ("Oxygen Bed")),
-        ('3', ("ICU Bed")),
-        ('4', ("Ventillator Bed"))
-    )
-    bed_number = models.IntegerField(null=False, blank=False)
-    bed_category = models.CharField(choices=BED_CAT, max_length=30)
-    bed_status = models.BooleanField(default=False)
-
-    def __str__(self):
-        return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
-
-
-class BedStatus(Bed):
-    bed_status = True
-    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.username)
 
 class HealthStatus(TimeStamped):
     PATIENT_CONDITION = (

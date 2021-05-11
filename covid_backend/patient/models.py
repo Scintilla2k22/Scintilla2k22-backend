@@ -45,9 +45,9 @@ class PatientProfile(TimeStamped):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
 
 
-    def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
        
-        super(PatientProfile, self).save(*args, **kwargs)
+    #     super(PatientProfile, self).save(*args, **kwargs)
 
 @receiver(post_save, sender=PatientProfile)
 def create_patient_id(sender, instance=None, created=False, **kwargs):
@@ -62,5 +62,29 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
 
 
 
+class Bed(TimeStamped):
+    BED_CAT = (
+        ("1", ("General Bed")),
+        ("2", ("Oxygen Bed")),
+        ('3', ("ICU Bed")),
+        ('4', ("Ventillator Bed"))
+    )
+    bed_number = models.IntegerField(null=False, blank=False)
+    bed_category = models.CharField(choices=BED_CAT, max_length=30)
+    bed_status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
 
 
+class PatientBed(Bed):
+    bed_status = True
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.patient_id)
+
+
+    def save(self, *args, **kwargs):
+        
+        super(PatientBed, self).save(*args, **kwargs)
