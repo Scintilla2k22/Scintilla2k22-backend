@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from .models import *
 from django.conf import settings
+from django.utils import timezone
 
 User = settings.AUTH_USER_MODEL
 
@@ -31,16 +32,17 @@ User = settings.AUTH_USER_MODEL
 #         return user
 
 class PatientProfileSerializers(serializers.ModelSerializer):  
+     
     class Meta:
         model = PatientProfile
-        fields = ("name","icmr", "gender", "age", "contact_number",  "address")
+        fields = ("name", "gender", "age", "contact_number",  "address", "patient_id")
 
     def save(self):            
-        patient = PatientProfile(icmr=self.validated_data["icmr"])            
-        patient.name = self.validated_data["name"]
+        patient = PatientProfile(name=self.validated_data["name"])            
+        # patient.name = self.validated_data["name"]
         patient.age = self.validated_data["age"]
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
-        patient.address = self.validated_data["address"]        
-        patient.save()
+        patient.address = self.validated_data["address"]            
+        patient.save()      
         return patient

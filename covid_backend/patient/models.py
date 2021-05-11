@@ -8,6 +8,7 @@ from rest_framework.authtoken.models import Token
 from user.models import *
 from django.conf import settings
 from health.models import *
+from datetime import datetime
 
 # Create your models here.
 
@@ -25,9 +26,9 @@ class PatientProfile(TimeStamped):
         ("R", ("Recovered")),
         ("M", ("Migrated"))
     )
-    
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, blank=False, null=False)
-    icmr = models.CharField(max_length=50, blank=False, null=False, unique=True)
+    patient_id = models.CharField(max_length=50, blank=True, null=True, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=True, blank=True)
     age  = models.IntegerField(null=True, blank=True)
     contact_number = models.IntegerField(null=True, blank=True)    
@@ -35,14 +36,27 @@ class PatientProfile(TimeStamped):
     patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
     
+    class Meta:
+        ordering = ['-pk' , '-created_on', '-updated_on']
+
 
 
     def __str__(self):
-        return "Patient ID : {0}, name : {1} , status : {2}".format(self.icmr, self.name, self.get_patient_status_display())
+        return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
 
 
+    def save(self, *args, **kwargs):
+       
+        super(PatientProfile, self).save(*args, **kwargs)
 
-
+@receiver(post_save, sender=PatientProfile)
+def create_patient_id(sender, instance=None, created=False, **kwargs):
+    if instance.patient_id is  None:
+        date = str(datetime.date(datetime.now())).replace('-', '')
+        print(instance.pk)
+        username = int(date)*10000 + instance.id
+        instance.patient_id = str(username)
+        instance.save() 
 
 
 

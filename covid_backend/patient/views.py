@@ -43,8 +43,8 @@ class PatientProfileView(APIView):
 
     def get(self, request, *args, **kwargs):      
         patient_profile = PatientProfile.objects.all()
-        serializer = PatientProfileSerializers(patient_profile, many=True)
-        data =   {'data': serializer.data, 'status': status.HTTP_200_OK }      
+        serializers = PatientProfileSerializers(patient_profile, many=True)
+        data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
         if patient_profile.exists():                         
             return Response(data)
         else:

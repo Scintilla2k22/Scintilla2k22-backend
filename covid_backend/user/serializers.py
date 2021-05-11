@@ -50,7 +50,8 @@ class MedicalStaffRegistrationSerializers(serializers.ModelSerializer):
 class MedicalStaffProfileSerializers(serializers.ModelSerializer):
     STAFF_CATEGORY = (
         ("D", ("DOCTOR")),
-        ("N", ("NURSE"))
+        ("N", ("NURSE")),
+        ("A", ("ADMIN"))
     )
     first_name = serializers.CharField(style={'input_type': 'text'}, write_only=True)
     last_name = serializers.CharField(style={'input_type': 'text'}, write_only=True)
@@ -64,7 +65,8 @@ class MedicalStaffProfileSerializers(serializers.ModelSerializer):
     def save(self, request_user):
         staff_category_dict = {
         "D" : "DOCTOR",
-        "N" : "NURSE"
+        "N" : "NURSE",
+        "A" : "ADMIN"
         }              
         user = get_object_or_404(CustomUser, username=str(request_user))
         email = self.validated_data["email"]

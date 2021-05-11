@@ -100,7 +100,7 @@ class MedicalStaffProfile(TimeStamped):
     def __str__(self):
         return "Staff : {0}, ID : {1}".format(self.staff_category, self.user.username)
 
-  
+    
 
 @receiver(post_save, sender=CustomUser)
 def create_profile(sender, instance=None, created=False, **kwargs):
