@@ -3,5 +3,5 @@ from .models import *
 # Register your models here.
 
 admin.site.register(PatientProfile)
-admin.site.register(Bed)
+admin.site.register(PatientBedHistory)
 admin.site.register(PatientBed)

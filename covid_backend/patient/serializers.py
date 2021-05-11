@@ -52,7 +52,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 class PatientBedSerializers(serializers.ModelSerializer):
     patient_id = serializers.CharField(write_only=True)
     class Meta:
-        model = PatientBedHistory
+        model = PatientBed
         fields = ('patient_id', 'bed_number', 'bed_category')    
 
     def save(self):
@@ -64,4 +64,4 @@ class PatientBedSerializers(serializers.ModelSerializer):
         patient_bed.bed_status = bed_history.bed_status = True
         patient_bed.save()
         bed_history.save()
-        return bed
+        return PatientBed
