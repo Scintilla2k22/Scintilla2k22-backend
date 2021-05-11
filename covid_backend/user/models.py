@@ -1,5 +1,6 @@
 from django.db import models
 # from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, post_delete
 from django.shortcuts import get_object_or_404
@@ -18,8 +19,18 @@ class CustomUser(AbstractUser):
     is_nurse = models.BooleanField(default=False, blank=False, null=False)        
     is_admin = models.BooleanField(default=False, blank=False, null=False)
     
+
+    # def save(self, *args, **kwargs):       
+    #     permit = (1 if self.is_doctor else 0 ) + (1 if self.is_admin else 0) + (1 if self.is_nurse else 0)
+    #     if permit > 1:
+    #         raise ValidationError(
+    #            message="Permission Denied"
+    #         )
+    #     print(permit,"permit")
+    #     super(CustomUser(), self).save(*args, **kwargs)
+
     @property
-    def is_staff_type(self):
+    def get_staff_type(self):
         if self.is_nurse:
             staff = StaffCategory.objects.filter(title="N")
             if staff.exists():
@@ -34,6 +45,14 @@ class CustomUser(AbstractUser):
                 return staff.first()
             else:
                 create_staff = StaffCategory(title="D", slug="DOCTOR")
+                create_staff.save()
+                return create_staff
+        elif self.is_admin:
+            staff = StaffCategory.objects.filter(title="A")
+            if staff.exists():
+                return staff.first()
+            else:
+                create_staff = StaffCategory(title="A", slug="ADMIN")
                 create_staff.save()
                 return create_staff
         return None
@@ -51,6 +70,7 @@ class StaffCategory(models.Model):
     STAFF_CATEGORY = (
         ("D", ("DOCTOR")),
         ("N", ("NURSE")),
+        ("A", ("ADMIN"))
         
     )
     title = models.CharField(max_length=30, choices=STAFF_CATEGORY)
@@ -58,6 +78,8 @@ class StaffCategory(models.Model):
 
     def __str__(self):
         return self.get_title_display()
+
+    
 
 
 class MedicalStaffProfile(TimeStamped):
@@ -78,15 +100,7 @@ class MedicalStaffProfile(TimeStamped):
     def __str__(self):
         return "Staff : {0}, ID : {1}".format(self.staff_category, self.user.username)
 
-    # def save(self, *args, **kwargs):
-    #     print(self.staff_category)
-    #     if self.staff_category is not None and str(self.staff_category) == "NURSE":
-    #         print("NURSE")
-    #         self.user.is_staff = True 
-    #         self.user.save()            
-    #     super( MedicalStaffProfile, self).save(*args, **kwargs)
-
-
+  
 
 @receiver(post_save, sender=CustomUser)
 def create_profile(sender, instance=None, created=False, **kwargs):
@@ -94,12 +108,12 @@ def create_profile(sender, instance=None, created=False, **kwargs):
     # staff_query = MedicalStaffProfile.objects.filter(user=instance)
     if instance.is_staff    :
         if created:
-            MedicalStaffProfile.objects.create(user=instance)
+            MedicalStaffProfile.objects.create(user=instance, staff_category=instance.get_staff_type)
         elif not created:
             staff = MedicalStaffProfile.objects.filter(user=instance)
             if staff.exists():
                 staff = staff.first()
-                staff_type = instance.is_staff_type
+                staff_type = instance.get_staff_type
                 if staff_type is not None:
                     staff.staff_category = staff_type                    
                 else:
@@ -107,7 +121,7 @@ def create_profile(sender, instance=None, created=False, **kwargs):
                 staff.save()
             else:
                 new_staff = MedicalStaffProfile(user=instance)
-                staff_type = instance.is_staff_type
+                staff_type = instance.get_staff_type
                 if staff_type is not None:
                     new_staff.staff_category = staff_type                    
                 else:

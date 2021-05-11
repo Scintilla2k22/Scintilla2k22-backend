@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext, gettext_lazy as _
 from .models import CustomUser
 from django.contrib.auth import (
@@ -31,7 +31,7 @@ class CustomUserCreationForm(forms.ModelForm):
         label=_("Password"),
         strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
-        help_text=password_validation.password_validators_help_text_html(),
+        # help_text=password_validation.password_validators_help_text_html(),
     )
     password2 = forms.CharField(
         label=_("Password confirmation"),
@@ -50,7 +50,7 @@ class CustomUserCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # if self._meta.model.USERNAME_FIELD in self.fields:
         #     self.fields[self._meta.model.USERNAME_FIELD].widget.attrs['autofocus'] = True
-
+        self.fields['username'].help_text = 'Enter you Staff ID'
 
 
     def clean_password2(self):
@@ -62,6 +62,16 @@ class CustomUserCreationForm(forms.ModelForm):
                 code='password_mismatch',
             )
         return password2
+
+
+    # def clean_is_doctor(self):
+ 
+    #     permit = 1 if self.cleaned_data["is_doctor"] else 0 
+    #     print(permit, "permit")
+    #     if permit :
+    #         raise forms.ValidationError("Permission denied, Create separate accout")
+
+    #     return self.cleaned_data["is_doctor"]
 
     # def _post_clean(self):
     #     super()._post_clean()
@@ -84,3 +94,15 @@ class CustomUserCreationForm(forms.ModelForm):
 
  
 
+# class CustomUserChangeForm(UserChangeForm):
+#     class Meta:
+#         model = CustomUser()
+#         fields = '__all__'
+
+#     def clean_is_doctor(self):
+#         permit = 1 if self.cleaned_data["is_doctor"] else 0 
+#         print(permit, "permit")
+#         if permit :
+#             raise forms.ValidationError("Permission denied, Create separate accout")
+
+#         return self.cleaned_data["is_doctor"]

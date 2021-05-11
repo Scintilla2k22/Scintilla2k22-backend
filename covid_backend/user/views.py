@@ -60,6 +60,8 @@ class LoginUserView(ObtainAuthToken):
                 response['data']['staff_category'] = "DOCTOR"    
             elif user.is_nurse:
                 response['data']['staff_category'] = 'NURSE'
+            elif user.is_admin:
+                response['data']['staff_category'] = 'ADMIN'
             response['status'] = status.HTTP_200_OK
             response['msg'] = "You are Successfully logged in"           
             return Response(response)

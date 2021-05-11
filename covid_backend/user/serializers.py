@@ -40,6 +40,8 @@ class MedicalStaffRegistrationSerializers(serializers.ModelSerializer):
             user.is_doctor = True
         elif user_categ == "N":
             user.is_nurse = True
+        elif user_categ == "A":
+            user.is_admin = True
         
         user.save()
         return user

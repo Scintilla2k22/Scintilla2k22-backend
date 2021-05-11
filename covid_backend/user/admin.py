@@ -18,7 +18,8 @@ class CustomUserAdmin(UserAdmin):
                     'is_doctor',
                     'is_nurse',
                     
-                )
+                ),
+                'description': "Select any one of them "
             }
         )
     )
