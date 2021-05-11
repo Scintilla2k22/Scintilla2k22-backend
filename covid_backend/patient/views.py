@@ -52,10 +52,27 @@ class PatientProfileView(APIView):
             return Response({'data': "Patient doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
 
 
+@api_view(['GET'])
+def get_patient_profile(request, **kwargs):
+    patient = get_object_or_404(PatientProfile,patient_id= kwargs.get('id'))
+    if patient:
+        serializer = PatientProfileSerializers(patient, many=False)
+        data = {'data' : serializer.data, 'status' :status.HTTP_200_OK }
+        return Response(data)
+    else:
+        return Response({'data': "Patient  doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
+
+
+
 
 @api_view(['POST'])
 def bed_allotment(request):
     serializer = PatientBedSerializers( data = request.data)
+    qs = get_object_or_404(PatientBed, bed_number=request.data["bed_number"])
+    
+    if qs and qs.bed_status:
+        return Response({"data": "Bed already alloted ", "status" : status.HTTP_400_BAD_REQUEST })
+
     if serializer.is_valid():
         serializer.save()
         return Response({"data": request.data , "status":status.HTTP_201_CREATED, "msg" : "Bed alloted to patient {}".format(request.data["patient_id"]) })

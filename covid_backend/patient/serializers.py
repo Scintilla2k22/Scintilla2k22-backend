@@ -52,16 +52,16 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 class PatientBedSerializers(serializers.ModelSerializer):
     patient_id = serializers.CharField(write_only=True)
     class Meta:
-        model = PatientBed
-        fields = ('patient_id', 'bed_number', 'bed_category')
+        model = PatientBedHistory
+        fields = ('patient_id', 'bed_number', 'bed_category')    
 
     def save(self):
         patient = get_object_or_404(PatientProfile, patient_id = self.validated_data["patient_id"] )
-
-        bed = PatientBed(patient = patient)
-        bed.bed_category = self.validated_data["bed_category"]
-        bed.bed_number = self.validated_data["bed_number"]
-        bed.bed_status = True
-        bed.save()
-
+        patient_bed = PatientBed(patient = patient)
+        bed_history = PatientBedHistory(patient=patient)
+        patient_bed.bed_category = bed_history.bed_category = self.validated_data["bed_category"]
+        patient_bed.bed_number = bed_history.bed_number = self.validated_data["bed_number"]
+        patient_bed.bed_status = bed_history.bed_status = True
+        patient_bed.save()
+        bed_history.save()
         return bed

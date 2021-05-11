@@ -62,7 +62,7 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
 
 
 
-class Bed(TimeStamped):
+class PatientBed(TimeStamped):
     BED_CAT = (
         ("1", ("General Bed")),
         ("2", ("Oxygen Bed")),
@@ -77,14 +77,12 @@ class Bed(TimeStamped):
         return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
 
 
-class PatientBed(Bed):
+class PatientBedHistory(PatientBed):
     bed_status = True
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.patient_id)
 
-
     def save(self, *args, **kwargs):
-        
-        super(PatientBed, self).save(*args, **kwargs)
+        super(PatientBedHistory, self).save(*args, **kwargs)
