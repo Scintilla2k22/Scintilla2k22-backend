@@ -21,9 +21,8 @@ class PatientHealthUpdateView(APIView):
 
 @api_view(['GET'])
 def get_patients(request, **kwargs):
-    print(kwargs.get('icmr'),  "\n\n\n\n\n")
     patient = get_object_or_404(PatientProfile,icmr = kwargs.get('icmr'))
-    health_history = HealthStatus.objects.filter(patient=patient)
+    health_history = HealthStatus.objects.filter(patient=patient)[:5]
     serializer = PatientHealthUpdateSerializers(health_history, many=True)
     data = {'data' : serializer.data, 'status' :status.HTTP_200_OK }
 

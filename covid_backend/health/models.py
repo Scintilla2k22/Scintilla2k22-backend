@@ -39,7 +39,7 @@ class HealthStatus(TimeStamped):
     oxy_level = models.IntegerField(blank=False, null=False)
     blood_pres_systolic = models.IntegerField(blank=False, null=False)
     blood_pres_diastolic = models.IntegerField(blank=False, null=False)
-    temperature = models.IntegerField(blank=False, null=False)
+    temperature = models.DecimalField(blank=False, null=False, max_digits=4, decimal_places=2)
 
     def __str__(self):
         return "Patient : {0} ,OL : {1}, T : {2}C ".format(self.patient.name, self.oxy_level, self.temperature)
