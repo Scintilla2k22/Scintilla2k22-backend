@@ -19,6 +19,7 @@ class PatientHealthUpdateView(APIView):
         else:
             return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
+
 @api_view(['GET'])
 def get_patients(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id = kwargs.get('icmr'))

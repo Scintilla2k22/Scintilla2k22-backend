@@ -9,7 +9,8 @@ from user.models import *
 from django.conf import settings
 from health.models import *
 from datetime import datetime
-
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 User = settings.AUTH_USER_MODEL
@@ -58,11 +59,7 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
         instance.patient_id = str(username)
         instance.save() 
 
-
-
-
-
-class PatientBed(TimeStamped):
+class Bed(models.Model):
     BED_CAT = (
         ("1", ("General Bed")),
         ("2", ("Oxygen Bed")),
@@ -73,16 +70,41 @@ class PatientBed(TimeStamped):
     bed_category = models.CharField(choices=BED_CAT, max_length=30)
     bed_status = models.BooleanField(default=False)
 
+    class Meta:
+        abstract = True
+
+
+
+class PatientBed(Bed, TimeStamped):    
+    patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True)
+   
+
+    def clean(self):
+        qs = PatientBed.objects.filter(bed_number=self.bed_number)    
+        if qs.exists() and qs.first().bed_status:
+            raise ValidationError(('Bed already alloted'))
+    
     def __str__(self):
         return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
 
+    # @property
+    # def get_alloted_bed(self):
+    #     count = PatientBed.objects.filter(bed_status=True)
+    #     return count
 
-class PatientBedHistory(PatientBed):
+class PatientBedHistory(Bed, TimeStamped):
     bed_status = True
-    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE)
+    PatientBed.patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.patient_id)
 
     def save(self, *args, **kwargs):
         super(PatientBedHistory, self).save(*args, **kwargs)
+
+
+
+
+@receiver(post_save, sender=PatientBed)
+def create_patient_bed_history(sender, instance=None, created=False, **kwargs):
+    PatientBedHistory.objects.create(patient=instance.patient, bed_number=instance.bed_number, bed_category=instance.bed_category)

@@ -68,11 +68,10 @@ def get_patient_profile(request, **kwargs):
 @api_view(['POST'])
 def bed_allotment(request):
     serializer = PatientBedSerializers( data = request.data)
-    qs = get_object_or_404(PatientBed, bed_number=request.data["bed_number"])
-    
-    if qs and qs.bed_status:
+    qs = PatientBed.objects.filter(bed_number=request.data["bed_number"])  
+    if qs.exists() and qs.first().bed_status:
         return Response({"data": "Bed already alloted ", "status" : status.HTTP_400_BAD_REQUEST })
-
+    
     if serializer.is_valid():
         serializer.save()
         return Response({"data": request.data , "status":status.HTTP_201_CREATED, "msg" : "Bed alloted to patient {}".format(request.data["patient_id"]) })
@@ -80,5 +79,10 @@ def bed_allotment(request):
         return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
 
-
+@api_view(["GET"])
+def get_alloted_beds(request):
+    bed = PatientBed.objects.filter(bed_status=True)
+    serializers = PatientBedSerializers(bed, many=True)
+    data = {"data":serializers.data, "count": bed.count(), "status": status.HTTP_200_OK}
+    return Response(data)
 
