@@ -127,4 +127,4 @@ class PatientBedHistory(Bed, TimeStamped):
 
 @receiver(post_save, sender=PatientBed)
 def create_patient_bed_history(sender, instance=None, created=False, **kwargs):
-    PatientBedHistory.objects.create(patient=str(instance.patient.patient_id), bed_number=instance.bed_number, bed_category=instance.bed_category)
+    PatientBedHistory.objects.create(patient=str(instance.patient_id), bed_number=instance.bed_number, bed_category=instance.bed_category)
