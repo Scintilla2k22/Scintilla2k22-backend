@@ -84,8 +84,7 @@ class Bed(models.Model):
         ('4', ("Ventillator Bed"))
     )
     bed_number = models.IntegerField(null=False, blank=False)
-    bed_category = models.CharField(choices=BED_CAT, max_length=30)
-    bed_status = models.BooleanField(default=False)
+    bed_category = models.CharField(choices=BED_CAT, max_length=30)    
 
     class Meta:
         abstract = True
@@ -94,13 +93,16 @@ class Bed(models.Model):
 
 class PatientBed(Bed, TimeStamped):    
     patient = models.OneToOneField(PatientProfile, on_delete=models.CASCADE,  unique=True)   
-
+    bed_status = models.BooleanField(default=True)
     def clean(self):
         qs = PatientBed.objects.filter(bed_number=self.bed_number)       
 
         if  qs.exists() and qs.first().bed_status and  str(self.patient.patient_id) != str(qs.first().patient.patient_id) :
             raise ValidationError(('Bed already alloted'))
         
+        if self.bed_status == False:
+            raise ValidationError(("Bed can't be alloted with unchecked status."))
+
         return super().clean()
 
     def __str__(self):
@@ -112,8 +114,7 @@ class PatientBed(Bed, TimeStamped):
     #     count = PatientBed.objects.filter(bed_status=True)
     #     return count
 
-class PatientBedHistory(Bed, TimeStamped):
-    bed_status = True
+class PatientBedHistory(Bed, TimeStamped):    
     patient = models.CharField(max_length=30, null=False, blank=False)
 
     def __str__(self):
@@ -127,4 +128,8 @@ class PatientBedHistory(Bed, TimeStamped):
 
 @receiver(post_save, sender=PatientBed)
 def create_patient_bed_history(sender, instance=None, created=False, **kwargs):
-    PatientBedHistory.objects.create(patient=str(instance.patient_id), bed_number=instance.bed_number, bed_category=instance.bed_category)
+    if created:
+        PatientBedHistory.objects.create(patient=str(instance.patient_id), bed_number=instance.bed_number, bed_category=instance.bed_category)
+    
+    if instance.bed_status == False:
+        instance.delete()
