@@ -20,14 +20,13 @@ class CustomUser(AbstractUser):
     is_admin = models.BooleanField(default=False, blank=False, null=False)
     
 
-    # def save(self, *args, **kwargs):       
-    #     permit = (1 if self.is_doctor else 0 ) + (1 if self.is_admin else 0) + (1 if self.is_nurse else 0)
-    #     if permit > 1:
-    #         raise ValidationError(
-    #            message="Permission Denied"
-    #         )
-    #     print(permit,"permit")
-    #     super(CustomUser(), self).save(*args, **kwargs)
+    def clean(self):
+        permit = (1 if self.is_doctor else 0 ) + (1 if self.is_admin else 0) + (1 if self.is_nurse else 0)
+        if permit > 1:
+            raise ValidationError(
+            ("Permission Denied, cannot hold multiple designation (i.e doctor, nurse, admin) ."))
+        return super().clean()
+
 
     @property
     def get_staff_type(self):

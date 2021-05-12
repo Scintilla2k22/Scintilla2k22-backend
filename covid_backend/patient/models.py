@@ -54,7 +54,7 @@ class PatientProfile(TimeStamped):
 def create_patient_id(sender, instance=None, created=False, **kwargs):
     if instance.patient_id is  None:
         date = str(datetime.date(datetime.now())).replace('-', '')
-        print(instance.pk)
+        # print(instance.pk)
         username = int(date)*10000 + instance.id
         instance.patient_id = str(username)
         instance.save() 
@@ -72,9 +72,10 @@ class BedCount(models.Model):
         if self.general + self.oxygen + self.icu + self.ventillator != self.total:
             raise ValidationError(('Invalid Entry, Total beds is not properly defined'))
             
-        if qs[0].pk != self.pk and  qs.count():
+        if  qs.count() and qs[0].pk != self.pk :
             raise ValidationError(('Cannot create more than one model, make change on the above one only'))
 
+        return super().clean()
 class Bed(models.Model):
     BED_CAT = (
         ("1", ("General Bed")),
@@ -99,7 +100,8 @@ class PatientBed(Bed, TimeStamped):
 
         if  qs.exists() and qs.first().bed_status and  str(self.patient.patient_id) != str(qs.first().patient.patient_id) :
             raise ValidationError(('Bed already alloted'))
-
+        
+        return super().clean()
 
     def __str__(self):
         return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")

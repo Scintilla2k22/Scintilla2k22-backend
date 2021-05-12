@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from rest_framework.fields import NOT_READ_ONLY_WRITE_ONLY
 from .models import *
 from django.conf import settings
 from django.utils import timezone
@@ -69,3 +70,19 @@ class PatientBedSerializers(serializers.ModelSerializer):
         patient_bed.save()
         bed_history.save()
         return PatientBed
+
+
+class PatientStatusSerializer(serializers.Serializer):
+    PATIENT_STATUS = (
+        ("A", ("Active")),
+        ("R", ("Recovered")),
+        ("M", ("Migrated"))
+    )
+    model = PatientProfile
+    status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
+
+ 
+       
+class ChangeCovidFacilitySerializer(serializers.Serializer):
+    model = PatientProfile
+    facility = serializers.CharField(style={'input_type': 'text_area'}, required=True)

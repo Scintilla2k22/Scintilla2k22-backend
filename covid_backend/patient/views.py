@@ -80,7 +80,7 @@ def bed_allotment(request):
 
 
 @api_view(["GET"])
-def get_alloted_beds(request):
+def get_alloted_beds(request, **kwargs):
     tbed = BedCount.objects.all()
     if tbed.count() == 0:
         return Response({'data': "beds are not available", 'status': status.HTTP_404_NOT_FOUND})
@@ -97,7 +97,7 @@ def get_alloted_beds(request):
     ventillator_bed = PatientBed.objects.filter(bed_status=True, bed_category="4")
     serializers = PatientBedSerializers(total_alloted_bed, many=True)
     
-    alloted_bed = { "total" : total_alloted_bed.count() , 
+    alloted_beds = { "total" : total_alloted_bed.count() , 
             "general" : general_bed.count(),
             "oxygen" : oxy_bed.count(),
             "icu" : icu_bed.count(),
@@ -109,7 +109,44 @@ def get_alloted_beds(request):
         "icu" : total_icu,
         "ventillator" : total_venti    }
 
-    data = {"data":serializers.data, "alloted_beds": alloted_bed,"total_beds":total_beds, "status": status.HTTP_200_OK}
+    data = {"data":serializers.data, "alloted_beds": alloted_beds,"total_beds":total_beds, "status": status.HTTP_200_OK}
 
     return Response(data)
 
+
+
+@api_view(["PATCH"])
+def change_patient_status(request, **kwargs):
+    object = get_object_or_404(PatientProfile, patient_id = kwargs.get("id"))
+    serializer = PatientStatusSerializer(data=request.data)
+
+    if serializer.is_valid():        
+        object.patient_status = serializer.data.get("status")
+        object.save()
+        response = {
+            'status': status.HTTP_200_OK,
+            'data' : object.get_patient_status_display(),
+            'msg': 'Patient status updated successfully',            
+        }
+
+        return Response(response)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(["PATCH"])
+def change_covid_facility(request, **kwargs):
+    object = get_object_or_404(PatientProfile, patient_id = kwargs.get("id"))
+    serializer = ChangeCovidFacilitySerializer(data=request.data)
+    if serializer.is_valid():        
+        object.covid_facility = serializer.data.get("facility")
+        object.save()
+        response = {
+            'status': status.HTTP_200_OK,
+            'msg': 'Patient {0} migrated to {1}'.format(object.patient_id, object.covid_facility),            
+        }
+        
+        return Response(response)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
