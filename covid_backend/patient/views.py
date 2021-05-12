@@ -81,8 +81,18 @@ def bed_allotment(request):
 
 @api_view(["GET"])
 def get_alloted_beds(request):
-    bed = PatientBed.objects.filter(bed_status=True)
-    serializers = PatientBedSerializers(bed, many=True)
-    data = {"data":serializers.data, "count": bed.count(), "status": status.HTTP_200_OK}
+    total_bed = PatientBed.objects.filter(bed_status=True)
+    general_bed = PatientBed.objects.filter(bed_status=True, bed_category="1")
+    oxy_bed = PatientBed.objects.filter(bed_status=True, bed_category="2")
+    icu_bed = PatientBed.objects.filter(bed_status=True, bed_category="3")
+    ventillator_bed = PatientBed.objects.filter(bed_status=True, bed_category="4")
+    serializers = PatientBedSerializers(total_bed, many=True)
+    bed = { "total" : total_bed.count() , 
+            "oxygen" : oxy_bed.count(),
+            "icu" : icu_bed.count(),
+            "ventillator" : ventillator_bed.count()}
+
+    data = {"data":serializers.data, "bed": bed, "status": status.HTTP_200_OK}
+    
     return Response(data)
 

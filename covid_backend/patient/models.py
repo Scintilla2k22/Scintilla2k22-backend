@@ -76,7 +76,7 @@ class Bed(models.Model):
 
 
 class PatientBed(Bed, TimeStamped):    
-    patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True, blank=True)
    
 
     def clean(self):
@@ -94,7 +94,7 @@ class PatientBed(Bed, TimeStamped):
 
 class PatientBedHistory(Bed, TimeStamped):
     bed_status = True
-    PatientBed.patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.patient_id)
