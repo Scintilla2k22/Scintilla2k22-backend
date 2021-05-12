@@ -43,7 +43,7 @@ class PatientProfileView(APIView):
                 return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
     def get(self, request, *args, **kwargs):      
-        patient_profile = PatientProfile.objects.all()
+        patient_profile = PatientProfile.objects.filter(patient_status="A")
         serializers = PatientProfileSerializers(patient_profile, many=True)
         data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
         if patient_profile.exists():                         
@@ -81,18 +81,35 @@ def bed_allotment(request):
 
 @api_view(["GET"])
 def get_alloted_beds(request):
-    total_bed = PatientBed.objects.filter(bed_status=True)
+    tbed = BedCount.objects.all()
+    if tbed.count() == 0:
+        return Response({'data': "beds are not available", 'status': status.HTTP_404_NOT_FOUND})
+    
+    total_bed = tbed[0].total
+    total_gen = tbed[0].general
+    total_oxy = tbed[0].oxygen
+    total_icu = tbed[0].icu
+    total_venti = tbed[0].ventillator
+    total_alloted_bed = PatientBed.objects.filter(bed_status=True)
     general_bed = PatientBed.objects.filter(bed_status=True, bed_category="1")
     oxy_bed = PatientBed.objects.filter(bed_status=True, bed_category="2")
     icu_bed = PatientBed.objects.filter(bed_status=True, bed_category="3")
     ventillator_bed = PatientBed.objects.filter(bed_status=True, bed_category="4")
-    serializers = PatientBedSerializers(total_bed, many=True)
-    bed = { "total" : total_bed.count() , 
+    serializers = PatientBedSerializers(total_alloted_bed, many=True)
+    
+    alloted_bed = { "total" : total_alloted_bed.count() , 
+            "general" : general_bed.count(),
             "oxygen" : oxy_bed.count(),
             "icu" : icu_bed.count(),
             "ventillator" : ventillator_bed.count()}
+    total_beds = {
+        "total" : total_bed,
+        "general" : total_gen,
+        "oxygen" : total_oxy,
+        "icu" : total_icu,
+        "ventillator" : total_venti    }
 
-    data = {"data":serializers.data, "bed": bed, "status": status.HTTP_200_OK}
-    
+    data = {"data":serializers.data, "alloted_beds": alloted_bed,"total_beds":total_beds, "status": status.HTTP_200_OK}
+
     return Response(data)
 

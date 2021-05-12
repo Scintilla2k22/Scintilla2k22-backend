@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(PatientProfile)
 admin.site.register(PatientBedHistory)
 admin.site.register(PatientBed)
+admin.site.register(BedCount)

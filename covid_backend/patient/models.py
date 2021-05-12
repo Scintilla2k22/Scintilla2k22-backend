@@ -59,6 +59,22 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
         instance.patient_id = str(username)
         instance.save() 
 
+class BedCount(models.Model):
+    total = models.IntegerField(null=True, blank=True, default=0)
+    general = models.IntegerField(null=True, blank=True,default=0)
+    oxygen = models.IntegerField(null=True, blank=True, default=0)
+    icu = models.IntegerField(null=True, blank=True, default=0)
+    ventillator = models.IntegerField(null=True, blank=True, default=0)
+
+    def clean(self):
+        qs = BedCount.objects.all()
+        
+        if self.general + self.oxygen + self.icu + self.ventillator != self.total:
+            raise ValidationError(('Invalid Entry, Total beds is not properly defined'))
+            
+        if qs[0].pk != self.pk and  qs.count():
+            raise ValidationError(('Cannot create more than one model, make change on the above one only'))
+
 class Bed(models.Model):
     BED_CAT = (
         ("1", ("General Bed")),
@@ -76,16 +92,18 @@ class Bed(models.Model):
 
 
 class PatientBed(Bed, TimeStamped):    
-    patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True, blank=True)
-   
+    patient = models.OneToOneField(PatientProfile, on_delete=models.CASCADE,  unique=True)   
 
     def clean(self):
-        qs = PatientBed.objects.filter(bed_number=self.bed_number)    
-        if qs.exists() and qs.first().bed_status:
+        qs = PatientBed.objects.filter(bed_number=self.bed_number)       
+
+        if  qs.exists() and qs.first().bed_status and  str(self.patient.patient_id) != str(qs.first().patient.patient_id) :
             raise ValidationError(('Bed already alloted'))
-    
+
+
     def __str__(self):
         return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
+
 
     # @property
     # def get_alloted_bed(self):
@@ -94,7 +112,7 @@ class PatientBed(Bed, TimeStamped):
 
 class PatientBedHistory(Bed, TimeStamped):
     bed_status = True
-    patient = models.ForeignKey(PatientProfile, on_delete=models.SET_NULL, null=True, blank=True)
+    patient = models.CharField(max_length=30, null=False, blank=False)
 
     def __str__(self):
         return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.patient_id)
@@ -107,4 +125,4 @@ class PatientBedHistory(Bed, TimeStamped):
 
 @receiver(post_save, sender=PatientBed)
 def create_patient_bed_history(sender, instance=None, created=False, **kwargs):
-    PatientBedHistory.objects.create(patient=instance.patient, bed_number=instance.bed_number, bed_category=instance.bed_category)
+    PatientBedHistory.objects.create(patient=str(instance.patient.patient_id), bed_number=instance.bed_number, bed_category=instance.bed_category)
