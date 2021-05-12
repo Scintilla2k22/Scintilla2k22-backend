@@ -115,7 +115,7 @@ class PatientBedHistory(Bed, TimeStamped):
     patient = models.CharField(max_length=30, null=False, blank=False)
 
     def __str__(self):
-        return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient.patient_id)
+        return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient)
 
     def save(self, *args, **kwargs):
         super(PatientBedHistory, self).save(*args, **kwargs)

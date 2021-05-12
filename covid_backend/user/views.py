@@ -25,7 +25,8 @@ class MedicalStaffRegistrationView(APIView):
     def post(self, request, *args, **kwargs):        
         staff_category_dict = {
         "D" : "DOCTOR",
-        "N" : "NURSE"
+        "N" : "NURSE",
+        "A" : "ADMIN"
         }
         response = dict()
         serializer = MedicalStaffRegistrationSerializers(data=request.data)
