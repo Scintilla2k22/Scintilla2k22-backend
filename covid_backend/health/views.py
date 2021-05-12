@@ -6,10 +6,11 @@ from rest_framework import generics
 from rest_framework.response import Response
 from.models import *
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 class PatientHealthUpdateView(APIView):
-    
+    permission_classes = [IsAuthenticated,]
     def post(self, request, *args, **kwargs):
         serializer = PatientHealthUpdateSerializers(data=request.data)
 
@@ -20,6 +21,7 @@ class PatientHealthUpdateView(APIView):
             return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
 
+@permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def get_patients(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id = kwargs.get('icmr'))

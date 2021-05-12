@@ -6,7 +6,7 @@ from .serializers import *
 from django.shortcuts import get_object_or_404 
 from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
-
+from rest_framework.permissions import IsAuthenticated
 from.models import *
 
 User = settings.AUTH_USER_MODEL
@@ -32,7 +32,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class PatientProfileView(APIView):
-   
+    permission_classes = [IsAuthenticated,]
     def post(self, request, *args, **kwargs):       
             serializer = PatientProfileSerializers(data=request.data)
             
@@ -52,6 +52,7 @@ class PatientProfileView(APIView):
             return Response({'data': "Patient doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
 
 
+@permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def get_patient_profile(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id= kwargs.get('id'))
@@ -64,7 +65,7 @@ def get_patient_profile(request, **kwargs):
 
 
 
-
+@permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def bed_allotment(request):
     serializer = PatientBedSerializers( data = request.data)
@@ -79,6 +80,7 @@ def bed_allotment(request):
         return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
 
+@permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def get_alloted_beds(request, **kwargs):
     tbed = BedCount.objects.all()
@@ -114,7 +116,7 @@ def get_alloted_beds(request, **kwargs):
     return Response(data)
 
 
-
+@permission_classes([IsAuthenticated])
 @api_view(["PATCH"])
 def change_patient_status(request, **kwargs):
     object = get_object_or_404(PatientProfile, patient_id = kwargs.get("id"))
@@ -134,7 +136,7 @@ def change_patient_status(request, **kwargs):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+@permission_classes([IsAuthenticated])
 @api_view(["PATCH"])
 def change_covid_facility(request, **kwargs):
     object = get_object_or_404(PatientProfile, patient_id = kwargs.get("id"))

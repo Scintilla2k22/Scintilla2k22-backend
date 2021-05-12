@@ -33,7 +33,7 @@ User = settings.AUTH_USER_MODEL
 #         return user
 
 class PatientProfileSerializers(serializers.ModelSerializer):  
-     
+    patient_id = serializers.CharField(read_only=True)
     class Meta:
         model = PatientProfile
         fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status")
