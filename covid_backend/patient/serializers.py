@@ -35,7 +35,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
      
     class Meta:
         model = PatientProfile
-        fields = ("name", "gender", "age", "contact_number",  "address", "patient_id")
+        fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status")
 
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])            
