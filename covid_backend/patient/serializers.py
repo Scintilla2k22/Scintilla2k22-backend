@@ -59,9 +59,9 @@ class PatientBedSerializers(serializers.ModelSerializer):
         patient = get_object_or_404(PatientProfile, patient_id = self.validated_data["patient_id"] )
         pre_bed = PatientBed.objects.filter(patient = patient)
         if pre_bed.exists():
-            pre_bed.patient = None
-            pre_bed.bed_status = False
-            pre_bed.save()
+            pre_bed.first().patient = None
+            pre_bed.first().bed_status = False
+            pre_bed.first().save()
         patient_bed = PatientBed(patient = patient)
         bed_history = PatientBedHistory(patient=patient)
         patient_bed.bed_category = bed_history.bed_category = self.validated_data["bed_category"]
