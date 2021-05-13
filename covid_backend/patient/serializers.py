@@ -51,7 +51,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
 
 class PatientBedSerializers(serializers.ModelSerializer):
-    patient_id = serializers.CharField(write_only=True)
+    patient_id = serializers.CharField()
     class Meta:
         model = PatientBed
         fields = ('patient_id', 'bed_number', 'bed_category')    
