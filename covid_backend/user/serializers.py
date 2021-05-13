@@ -10,7 +10,7 @@ class MedicalStaffRegistrationSerializers(serializers.ModelSerializer):
     STAFF_CATEGORY = (
         ("D", ("DOCTOR")),
         ("N", ("NURSE")),
-        ("A", ("ADMIN"))
+        ('A', ('Admin'))
     )
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     staff_categ = serializers.ChoiceField(choices=STAFF_CATEGORY, write_only=True)
