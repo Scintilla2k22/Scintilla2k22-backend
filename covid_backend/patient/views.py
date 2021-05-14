@@ -58,8 +58,8 @@ class PatientProfileView(APIView):
 @api_view(['GET'])
 def get_searched_patients(request, **kwargs):
     query = kwargs.get("query").lower()
-    status_list = ("active", "migrated", "death")
-    status_dict = {"active" : "A", "migrated" : "M", "death" : "D"}
+    status_list = ("active", "migrated", "death", "recovered")
+    status_dict = {"active" : "A", "migrated" : "M", "death" : "D", "recovered" : "R"}
 
     if query in status_list:
         qs  = PatientProfile.objects.filter(patient_status=status_dict[query])
@@ -67,7 +67,7 @@ def get_searched_patients(request, **kwargs):
         qs = PatientProfile.objects.search(query=kwargs.get("query"))
     serializer = PatientProfileSerializers(qs, many=True)
     if qs.exists():        
-        return Response(serializer.data)
+        return Response({"data": serializer.data, "status": status.HTTP_200_OK })
     else:
         return Response({'data': "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
 
@@ -195,4 +195,4 @@ def get_filter_patients(request, **kwargs):
     if patient_profile.count()!=0:
         return Response({"data": serializers.data, "status": status.HTTP_200_OK})
     else:
-        return Response({"data": "Not Found!", "status": status.HTTP_400_BAD_REQUEST})
+        return Response({"data": "Not Found!", "status": status.HTTP_404_NOT_FOUND})
