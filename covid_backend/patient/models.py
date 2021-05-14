@@ -6,14 +6,46 @@ from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 # from django.contrib.auth.models import User
 from user.models import *
+from django.db.models import Q
 from django.conf import settings
 from health.models import *
-from datetime import datetime
+from datetime import datetime, timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from health.models import *
 # Create your models here.
 
 User = settings.AUTH_USER_MODEL
+
+class PatientQuerySet(models.QuerySet):        # customized  inbuilt  get_queryset()  function
+    
+ 
+    def search(self,query):
+
+        lookup = (
+                Q(patient_status__iexact=query) |
+                Q(patient_id__iexact = query)|
+                Q(name__icontains = query)|
+                Q(age__iexact = query)|
+                Q(gender__icontains = query)|
+                Q(address__icontains = query)|
+                Q(covid_facility__icontains = query)|
+                Q(created_on__icontains= query)|
+                Q(contact_number__iexact=query)             
+                )
+
+        return self.filter(lookup)
+
+
+class PatientManager(models.Manager):
+    def get_queryset(self):
+        return PatientQuerySet(self.model , using = self._db)
+     
+
+    def search(self , query = None):
+        if query is None:
+            return self.get_queryset().none()
+        return self.get_queryset().search(query)
 
 class PatientProfile(TimeStamped):
     GENDER_CHOICE = (
@@ -23,10 +55,10 @@ class PatientProfile(TimeStamped):
     )
     
     PATIENT_STATUS = (
-        ("A", ("Active")),
-        ("R", ("Recovered")),
-        ("M", ("Migrated")),
-        ('D', ("Death"))
+        ("A", ("active")),
+        ("R", ("recovered")),
+        ("M", ("migrated")),
+        ('D', ("death"))
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, blank=False, null=False)
@@ -37,7 +69,7 @@ class PatientProfile(TimeStamped):
     address = models.TextField(null=True, blank=True)
     patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
-    
+    objects = PatientManager()
     class Meta:
         ordering = ['-pk' , '-created_on', '-updated_on']
 
@@ -45,6 +77,14 @@ class PatientProfile(TimeStamped):
 
     def __str__(self):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
+
+    @property
+    def get_health_update(self):
+        qs = self.healthstatus_set.filter(created_on__gte = datetime.date(datetime.now()))
+        if qs.exits():
+            return False
+        else:
+            return True
 
 
     # def save(self, *args, **kwargs):
