@@ -1,4 +1,5 @@
 # third party imports
+from health.models import HealthStatus
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -43,14 +44,34 @@ class PatientProfileView(APIView):
                 return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
     def get(self, request, *args, **kwargs):      
-        patient_profile = PatientProfile.objects.filter(patient_status="A")
+        patient_profile = PatientProfile.objects.filter(patient_status="A").exclude( healthstatus__created_on__gte = datetime.date(datetime.now()))
+        unchecked = patient_profile.count()
+        total = PatientProfile.objects.all().count()
         serializers = PatientProfileSerializers(patient_profile, many=True)
-        data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
+        data =   {'data': serializers.data,'unchecked' : unchecked, 'total': total, 'status': status.HTTP_200_OK }      
         if patient_profile.exists():                         
             return Response(data)
         else:
             return Response({'data': "Patient doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
 
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def get_searched_patients(request, **kwargs):
+    query = kwargs.get("query").lower()
+    status_list = ("active", "migrated", "death")
+    status_dict = {"active" : "A", "migrated" : "M", "death" : "D"}
+
+    if query in status_list:
+        qs  = PatientProfile.objects.filter(patient_status=status_dict[query])
+    else:
+        qs = PatientProfile.objects.search(query=kwargs.get("query"))
+    serializer = PatientProfileSerializers(qs, many=True)
+    if qs.exists():        
+        return Response(serializer.data)
+    else:
+        return Response({'data': "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
+
+ 
 
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])

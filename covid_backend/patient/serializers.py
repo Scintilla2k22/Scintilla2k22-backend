@@ -38,15 +38,9 @@ class PatientProfileSerializers(serializers.ModelSerializer):
  
     class Meta:
         model = PatientProfile
-        # fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status", "bed_number")
-        fields = '__all__'
-        
-        
-
-
+        fields = '__all__' 
     def save(self):            
-        patient = PatientProfile(name=self.validated_data["name"])            
-        # patient.name = self.validated_data["name"]
+        patient = PatientProfile(name=self.validated_data["name"])    
         patient.age = self.validated_data["age"]
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
@@ -63,10 +57,8 @@ class PatientBedSerializers(serializers.ModelSerializer):
         model = PatientBed
         fields = ('patient_id', 'bed_number', 'bed_category')    
 
-    def save(self):
-        print(self.validated_data["patient_id"])
-        patient = get_object_or_404(PatientProfile, patient_id = self.validated_data["patient_id"] )
-        self.validated_data["name"] = patient.name
+    def save(self):       
+        patient = get_object_or_404(PatientProfile, patient_id = self.validated_data["patient_id"] )       
         pre_bed = PatientBed.objects.filter(patient = patient)
         if pre_bed.exists():
             pre_bed.first().delete()

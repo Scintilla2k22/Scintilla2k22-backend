@@ -23,7 +23,7 @@ class PatientHealthUpdateView(APIView):
 
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def get_patients(request, **kwargs):
+def get_patients_health(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id = kwargs.get('icmr'))
     health_history = HealthStatus.objects.filter(patient=patient)[:5]
     serializer = PatientHealthUpdateSerializers(health_history, many=True)
