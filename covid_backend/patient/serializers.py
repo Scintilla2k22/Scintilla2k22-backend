@@ -58,10 +58,10 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
 class PatientBedSerializers(serializers.ModelSerializer):
     patient_id = serializers.CharField()
-    name = serializers.CharField()
+    # name = serializers.CharField()
     class Meta:
         model = PatientBed
-        fields = ('patient_id', 'bed_number', 'bed_category', 'name')    
+        fields = ('patient_id', 'bed_number', 'bed_category')    
 
     def save(self):
         print(self.validated_data["patient_id"])
