@@ -25,7 +25,8 @@ class PatientProfile(TimeStamped):
     PATIENT_STATUS = (
         ("A", ("Active")),
         ("R", ("Recovered")),
-        ("M", ("Migrated"))
+        ("M", ("Migrated")),
+        ('D', ("Death"))
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, blank=False, null=False)

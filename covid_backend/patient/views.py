@@ -58,6 +58,7 @@ def get_patient_profile(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id= kwargs.get('id'))
     if patient:
         serializer = PatientProfileSerializers(patient, many=False)
+        bed = PatientBed.objects.filter(patient = patient, bed_status=True)
         data = {'data' : serializer.data, 'status' :status.HTTP_200_OK }
         return Response(data)
     else:

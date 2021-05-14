@@ -34,9 +34,10 @@ User = settings.AUTH_USER_MODEL
 
 class PatientProfileSerializers(serializers.ModelSerializer):  
     patient_id = serializers.CharField(read_only=True)
+    bed_number = serializers.CharField(read_only=True)
     class Meta:
         model = PatientProfile
-        fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status")
+        fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status", "created_on", "bed_number")
 
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])            
@@ -52,13 +53,15 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
 class PatientBedSerializers(serializers.ModelSerializer):
     patient_id = serializers.CharField()
+    name = serializers.CharField()
     class Meta:
         model = PatientBed
-        fields = ('patient_id', 'bed_number', 'bed_category')    
+        fields = ('patient_id', 'bed_number', 'bed_category', 'name')    
 
     def save(self):
         print(self.validated_data["patient_id"])
         patient = get_object_or_404(PatientProfile, patient_id = self.validated_data["patient_id"] )
+        self.validated_data["name"] = patient.name
         pre_bed = PatientBed.objects.filter(patient = patient)
         if pre_bed.exists():
             pre_bed.first().delete()
@@ -76,7 +79,8 @@ class PatientStatusSerializer(serializers.Serializer):
     PATIENT_STATUS = (
         ("A", ("Active")),
         ("R", ("Recovered")),
-        ("M", ("Migrated"))
+        ("M", ("Migrated")),
+        ('D', ("Death"))
     )
     model = PatientProfile
     status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
