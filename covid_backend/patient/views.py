@@ -66,7 +66,7 @@ def get_patient_profile(request, **kwargs):
             data["bed_number"] = "NA"
         
             
-        print(serializer.data)
+        # print(serializer.data)
         data = {'data' : data,'msg':"ehllo",  'status' :status.HTTP_200_OK }
         return Response(data)
     else:
@@ -161,3 +161,17 @@ def change_covid_facility(request, **kwargs):
         return Response(response)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_filter_patients(request, **kwargs):
+    pstatus = kwargs.get("status")
+    patient_profile = PatientProfile.objects.filter(patient_status=pstatus)
+    serializers = PatientProfileSerializers(patient_profile, many=True)
+    if patient_profile.count()!=0:
+        return Response({"data": serializers.data, "status": status.HTTP_200_OK})
+    else:
+        return Response({"data": "Not Found!", "status": status.HTTP_400_BAD_REQUEST})
