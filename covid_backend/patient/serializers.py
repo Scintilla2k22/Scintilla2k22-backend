@@ -34,12 +34,15 @@ User = settings.AUTH_USER_MODEL
 #         return user
 
 class PatientProfileSerializers(serializers.ModelSerializer):  
-    patient_id = serializers.CharField(read_only=True)
-    bed_number = serializers.CharField(read_only=True)
+    patient_id = serializers.CharField(read_only=True)   
+ 
     class Meta:
         model = PatientProfile
-        # fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status")
+        # fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status", "bed_number")
         fields = '__all__'
+        
+        
+
 
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])            

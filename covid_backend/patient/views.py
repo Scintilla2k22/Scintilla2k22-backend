@@ -59,7 +59,15 @@ def get_patient_profile(request, **kwargs):
     if patient:
         serializer = PatientProfileSerializers(patient, many=False)
         bed = PatientBed.objects.filter(patient = patient, bed_status=True)
-        data = {'data' : serializer.data, 'status' :status.HTTP_200_OK }
+        data = serializer.data
+        if bed.exists():
+            data["bed_number"] = bed.first().bed_number
+        else:
+            data["bed_number"] = "NA"
+        
+            
+        print(serializer.data)
+        data = {'data' : data,'msg':"ehllo",  'status' :status.HTTP_200_OK }
         return Response(data)
     else:
         return Response({'data': "Patient  doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
