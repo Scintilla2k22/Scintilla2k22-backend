@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from rest_framework import fields
 from rest_framework.fields import NOT_READ_ONLY_WRITE_ONLY
 from .models import *
 from django.conf import settings
@@ -36,7 +37,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     patient_id = serializers.CharField(read_only=True)
     class Meta:
         model = PatientProfile
-        fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status")
+        # fields = ("name", "gender", "age", "contact_number",  "address", "patient_id", "patient_status")
+        fields = '__all__'
 
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])            
