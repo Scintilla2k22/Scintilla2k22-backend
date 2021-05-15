@@ -83,7 +83,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility', 'patient_bed', 'bed_number', 'bed_category'] 
+        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed', "bed_category", "bed_number"] 
         # fields = "__all__"
    
 
@@ -105,7 +105,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         pre_bed = PatientBed.objects.filter(patient = patient)
         if pre_bed.exists():
             pre_bed.first().delete()
-            
+
         patient_bed = PatientBed(patient = patient)
         bed_history = PatientBedHistory(patient=patient)
         patient_bed.bed_category = bed_history.bed_category = self.validated_data["bed_category"]

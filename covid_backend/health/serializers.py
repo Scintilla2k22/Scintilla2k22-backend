@@ -13,6 +13,7 @@ class PatientHealthUpdateSerializers(serializers.ModelSerializer):
 
     def save(self):            
         patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["username"])
+        patient.health_condition = self.validated_data["patient_condition"]
         health_update = HealthStatus(patient=patient)
         health_update.patient_condition = self.validated_data["patient_condition"]
         health_update.oxy_level = self.validated_data["oxy_level"]
@@ -20,5 +21,9 @@ class PatientHealthUpdateSerializers(serializers.ModelSerializer):
         health_update.blood_pres_diastolic = self.validated_data["blood_pres_diastolic"]
         health_update.temperature = self.validated_data["temperature"]
         health_update.save()
+        patient.save()
+        
+        return health_update
+        
 
 
