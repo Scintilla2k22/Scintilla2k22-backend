@@ -78,8 +78,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     ) 
     patient_id = serializers.CharField(read_only=True)   
     patient_bed = PatientBedSerializers(read_only=True)
-    bed_number = serializers.IntegerField(write_only=True)
-    bed_category = serializers.ChoiceField(choices=BED_CAT, write_only=True)
+    bed_number = serializers.IntegerField(write_only=True, read_only=False)
+    bed_category = serializers.ChoiceField(choices=BED_CAT,write_only=True, read_only=False)
 
     class Meta:
         model = PatientProfile
@@ -99,7 +99,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient.age = self.validated_data["age"]
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
-        patient.address = self.validated_data["address"]            
+        patient.address = self.validated_data["address"]     
+        patient.health_condition = self.validated_data["health_condition"]       
         patient.save()
 
         pre_bed = PatientBed.objects.filter(patient = patient)
