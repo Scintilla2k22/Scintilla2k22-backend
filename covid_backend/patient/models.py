@@ -48,6 +48,13 @@ class PatientManager(models.Manager):
         return self.get_queryset().search(query)
 
 class PatientProfile(TimeStamped):
+    PATIENT_CONDITION = (
+        ("1", ("Asymptomataic")),
+        ("2", ("Mild")),
+        ("3", ("Moderate")),
+        ("4", ("severe"))
+    )
+
     GENDER_CHOICE = (
     ("M", ("MALE")),
     ("F", ("FEMALE")),
@@ -69,6 +76,7 @@ class PatientProfile(TimeStamped):
     address = models.TextField(null=True, blank=True)
     patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
+    health_condition = models.CharField(choices=PATIENT_CONDITION, max_length=30, null=False)
     objects = PatientManager()
     class Meta:
         ordering = ['-pk' , '-created_on', '-updated_on']
