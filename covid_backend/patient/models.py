@@ -133,7 +133,7 @@ class Bed(models.Model):
 
 
 class PatientBed(Bed, TimeStamped):    
-    patient = models.OneToOneField(PatientProfile, on_delete=models.CASCADE,  unique=True)   
+    patient = models.OneToOneField(PatientProfile,related_name="patient_bed", on_delete=models.CASCADE,  unique=True)   
     bed_status = models.BooleanField(default=True)
     def clean(self):
         qs = PatientBed.objects.filter(bed_number=self.bed_number)       

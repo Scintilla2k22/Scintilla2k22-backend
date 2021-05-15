@@ -33,20 +33,17 @@ User = settings.AUTH_USER_MODEL
 #         user.save()
 #         return user
 
-class PatientProfileSerializers(serializers.ModelSerializer):  
-    patient_id = serializers.CharField(read_only=True)   
- 
-    class Meta:
-        model = PatientProfile
-        fields = '__all__' 
-    def save(self):            
-        patient = PatientProfile(name=self.validated_data["name"])    
-        patient.age = self.validated_data["age"]
-        patient.contact_number = self.validated_data["contact_number"]     
-        patient.gender = self.validated_data["gender"]        
-        patient.address = self.validated_data["address"]            
-        patient.save()              
-        return patient
+
+
+"""
+    Nested Relationships in Serializers
+
+    http://www.django-rest-framework.org/api-guide/relations/#nested-relationships
+
+    http://www.django-rest-framework.org/api-guide/relations/#serializer-relations
+
+"""
+
 
 
 class PatientBedSerializers(serializers.ModelSerializer):
@@ -70,6 +67,46 @@ class PatientBedSerializers(serializers.ModelSerializer):
         bed_history.save()
         return PatientBed
 
+
+
+class PatientProfileSerializers(serializers.ModelSerializer): 
+    BED_CAT = (
+        ("1", ("General Bed")),
+        ("2", ("Oxygen Bed")),
+        ('3', ("ICU Bed")),
+        ('4', ("Ventillator Bed"))
+    ) 
+    patient_id = serializers.CharField(read_only=True)   
+    patient_bed = PatientBedSerializers(read_only=True)
+    bed_number = serializers.IntegerField()
+    bed_category = serializers.ChoiceField(choices=BED_CAT)
+
+    class Meta:
+        model = PatientProfile
+        fields = ['id', 'patient_id', 'created_on', 'updated_on','bed_number', 'bed_category', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility'] 
+        # fields = "__all__"
+        
+    def save(self):            
+        patient = PatientProfile(name=self.validated_data["name"])
+          
+        patient.age = self.validated_data["age"]
+        patient.contact_number = self.validated_data["contact_number"]     
+        patient.gender = self.validated_data["gender"]        
+        patient.address = self.validated_data["address"]            
+        patient.save()
+
+        pre_bed = PatientBed.objects.filter(patient = patient)
+        if pre_bed.exists():
+            pre_bed.first().delete()
+        patient_bed = PatientBed(patient = patient)
+        bed_history = PatientBedHistory(patient=patient)
+        patient_bed.bed_category = bed_history.bed_category = self.validated_data["bed_category"]
+        patient_bed.bed_number = bed_history.bed_number = self.validated_data["bed_number"]
+        patient_bed.bed_status = bed_history.bed_status = True
+        patient_bed.save()
+        bed_history.save()   
+
+        return patient
 
 class PatientStatusSerializer(serializers.Serializer):
     PATIENT_STATUS = (
