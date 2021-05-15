@@ -74,7 +74,7 @@ def get_searched_patients(request, **kwargs):
 
  
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def get_patient_profile(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id= kwargs.get('id'))
