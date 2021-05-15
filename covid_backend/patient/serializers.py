@@ -77,18 +77,25 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         ('4', ("Ventillator Bed"))
     ) 
     patient_id = serializers.CharField(read_only=True)   
-    patient_bed = PatientBedSerializers(read_only=True)
+    patient_bed = PatientBedSerializers(read_only=True)    
     bed_number = serializers.IntegerField()
     bed_category = serializers.ChoiceField(choices=BED_CAT)
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'created_on', 'updated_on','bed_number', 'bed_category', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility'] 
+        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility', 'patient_bed', "bed_category", "bed_number"] 
         # fields = "__all__"
-        
+   
+
+    def validate(self, attr):
+        qs = PatientBed.objects.filter(bed_number=attr["bed_number"])  
+        if qs.exists() and qs.first().bed_status:
+            raise serializers.ValidationError({"bed_number" : ["Bed  already alloted"]})        
+        return attr
+
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])
-          
+        # print(self.validated_data)
         patient.age = self.validated_data["age"]
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
@@ -98,6 +105,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         pre_bed = PatientBed.objects.filter(patient = patient)
         if pre_bed.exists():
             pre_bed.first().delete()
+            
         patient_bed = PatientBed(patient = patient)
         bed_history = PatientBedHistory(patient=patient)
         patient_bed.bed_category = bed_history.bed_category = self.validated_data["bed_category"]
