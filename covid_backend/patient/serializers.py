@@ -78,12 +78,12 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     ) 
     patient_id = serializers.CharField(read_only=True)   
     patient_bed = PatientBedSerializers(read_only=True)
-    bed_number = serializers.IntegerField()
-    bed_category = serializers.ChoiceField(choices=BED_CAT)
+    bed_number = serializers.IntegerField(write_only=True)
+    bed_category = serializers.ChoiceField(choices=BED_CAT, write_only=True)
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'created_on', 'updated_on','bed_number', 'bed_category', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility'] 
+        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility', 'patient_bed', 'bed_number', 'bed_category'] 
         # fields = "__all__"
         
     def save(self):            
