@@ -45,8 +45,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
         patient.address = self.validated_data["address"]            
-        patient.save()  
-            
+        patient.save()              
         return patient
 
 
