@@ -1,7 +1,12 @@
+from patient.models import PatientProfile
 from django.db import models
 from patient.models import *
 from user.models import *
 from patient.models import *
+from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
+from django.db.models.signals import pre_delete, post_save, post_delete
+
 # Create your models here.
 
 
@@ -18,8 +23,17 @@ class HealthStatus(TimeStamped):
     oxy_level = models.IntegerField(blank=False, null=False)
     blood_pres_systolic = models.IntegerField(blank=False, null=False)
     blood_pres_diastolic = models.IntegerField(blank=False, null=False)
+    pulse_rate = models.IntegerField(blank=False, null=False)
     temperature = models.DecimalField(blank=False, null=False, max_digits=4, decimal_places=2)
 
     def __str__(self):
-        return "Patient : {0} ,OL : {1}, T : {2}C ".format(self.patient.name, self.oxy_level, self.temperature)
+        return "Patient : {0} | PC : {1} | OL : {2}% | BP : {3}/{4} mm Hg | PR : {5}bpm | T : {2}F |  ".format(self.patient.patient_id,self.get_patient_condition_display(), 
+        self.oxy_level,self.blood_pres_systolic, self.blood_pres_diastolic, self.pulse_rate, self.temperature)
 
+
+@receiver(post_save, sender=HealthStatus)
+def update_health_condition(sender, instance=None, created=False, **kwargs):
+    if created:
+        patient = get_object_or_404(PatientProfile, patient_id= instance.patient.patient_id)
+        patient.health_condition = instance.patient_condition
+        patient.save()

@@ -44,11 +44,12 @@ class PatientProfileView(APIView):
                 return Response({"data": serializer.errors, "status" : status.HTTP_400_BAD_REQUEST })
 
     def get(self, request, *args, **kwargs):      
-        patient_profile = PatientProfile.objects.filter(patient_status="A").exclude( healthstatus__created_on__gte = datetime.date(datetime.now()))
-        unchecked = patient_profile.count()
-        total = PatientProfile.objects.all().count()
+        # patient_profile = PatientProfile.objects.filter(patient_status="A").exclude( healthstatus__created_on__gte = datetime.date(datetime.now()))
+        patient_profile = PatientProfile.objects.all().filter(patient_status='A')
+        # unchecked = patient_profile.count()
+        # total = PatientProfile.objects.all().count()
         serializers = PatientProfileSerializers(patient_profile, many=True)
-        data =   {'data': serializers.data,'unchecked' : unchecked, 'total': total, 'status': status.HTTP_200_OK }      
+        data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
         if patient_profile.exists():                         
             return Response(data)
         else:

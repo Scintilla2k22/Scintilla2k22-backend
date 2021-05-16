@@ -47,6 +47,7 @@ class PatientManager(models.Manager):
             return self.get_queryset().none()
         return self.get_queryset().search(query)
 
+
 class PatientProfile(TimeStamped):
     PATIENT_CONDITION = (
         ("1", ("Asymptomataic")),
@@ -79,9 +80,8 @@ class PatientProfile(TimeStamped):
     health_condition = models.CharField(choices=PATIENT_CONDITION, max_length=30, null=False)
     objects = PatientManager()
     class Meta:
-        ordering = ['-pk' , '-created_on', '-updated_on']
-
-
+        ordering = ['updated_on']
+     
 
     def __str__(self):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
@@ -95,9 +95,6 @@ class PatientProfile(TimeStamped):
             return True
 
 
-    # def save(self, *args, **kwargs):
-       
-    #     super(PatientProfile, self).save(*args, **kwargs)
 
 @receiver(post_save, sender=PatientProfile)
 def create_patient_id(sender, instance=None, created=False, **kwargs):
@@ -125,6 +122,8 @@ class BedCount(models.Model):
             raise ValidationError(('Cannot create more than one model, make change on the above one only'))
 
         return super().clean()
+
+
 class Bed(models.Model):
     BED_CAT = (
         ("1", ("General Bed")),
@@ -137,6 +136,7 @@ class Bed(models.Model):
 
     class Meta:
         abstract = True
+
 
 
 
@@ -158,10 +158,7 @@ class PatientBed(Bed, TimeStamped):
         return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
 
 
-    # @property
-    # def get_alloted_bed(self):
-    #     count = PatientBed.objects.filter(bed_status=True)
-    #     return count
+
 
 class PatientBedHistory(Bed, TimeStamped):    
     patient = models.CharField(max_length=30, null=False, blank=False)
