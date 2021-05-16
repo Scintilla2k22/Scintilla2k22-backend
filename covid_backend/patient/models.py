@@ -96,9 +96,9 @@ class PatientProfile(TimeStamped):
             return True
 
 class PatientMigrate(TimeStamped):
-    migrated_to = models.TextField(blank=False, null=False)
+    migrated_to = models.TextField(blank=True, null=True)
     migrated_on = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
-    reason = models.TextField(blank=False, null=False)
+    reason = models.TextField(blank=True, null=True)
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
