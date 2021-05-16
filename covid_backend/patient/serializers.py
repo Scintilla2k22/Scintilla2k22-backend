@@ -77,7 +77,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         ('4', ("Ventillator Bed"))
     ) 
     patient_id = serializers.CharField(read_only=True)   
-    patient_bed = PatientBedSerializers(read_only=True)
+    patient_bed = PatientBedSerializers(read_only=True)    
     bed_number = serializers.IntegerField(write_only=True, read_only=False)
     bed_category = serializers.ChoiceField(choices=BED_CAT,write_only=True, read_only=False)
 
@@ -85,7 +85,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         model = PatientProfile
         fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed', "bed_category", "bed_number"] 
         # fields = "__all__"
-   
+        # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
 
     def validate(self, attr):
         qs = PatientBed.objects.filter(bed_number=attr["bed_number"])  
@@ -99,8 +99,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient.age = self.validated_data["age"]
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
-        patient.address = self.validated_data["address"]     
-        patient.health_condition = self.validated_data["health_condition"]       
+        patient.address = self.validated_data["address"]    
+        patient.health_condition = self.validated_data["health_condition"]        
         patient.save()
 
         pre_bed = PatientBed.objects.filter(patient = patient)

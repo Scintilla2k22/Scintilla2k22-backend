@@ -56,7 +56,7 @@ class LoginUserView(ObtainAuthToken):
             token, created = Token.objects.get_or_create(user=user)
             response['data'] = {}
             response['data']['token'] = token.key        
-            response['data']['staff_id'] = user.username       
+            response['data']['username'] = user.username       
             if user.is_doctor:
                 response['data']['staff_category'] = "DOCTOR"    
             elif user.is_nurse:
