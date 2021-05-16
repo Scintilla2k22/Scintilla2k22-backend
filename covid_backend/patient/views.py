@@ -169,16 +169,14 @@ def change_patient_status(request, **kwargs):
 
 
 @permission_classes([IsAuthenticated])
-@api_view(["PATCH"])
-def change_covid_facility(request, **kwargs):
-    object = get_object_or_404(PatientProfile, patient_id = kwargs.get("id"))
-    serializer = ChangeCovidFacilitySerializer(data=request.data)
+@api_view(["POST"])
+def patient_migration(request, **kwargs):
+     
+    serializer = PatientMigrationSerializer(data=request.data)
     if serializer.is_valid():        
-        object.covid_facility = serializer.data.get("facility")
-        object.save()
+        serializer.save()
         response = {
-            'status': status.HTTP_200_OK,
-            'msg': 'Patient {0} migrated to {1}'.format(object.patient_id, object.covid_facility),            
+          "data" : serializer.data, "status" : status.HTTP_201_CREATED  , "msg" : "Patient {0} migrated to {1}".format(request.data["patient"], request.data["migrated_to"])        
         }
         
         return Response(response)

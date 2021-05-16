@@ -129,6 +129,21 @@ class PatientStatusSerializer(serializers.Serializer):
 
  
        
-class ChangeCovidFacilitySerializer(serializers.Serializer):
-    model = PatientProfile
-    facility = serializers.CharField(style={'input_type': 'text_area'}, required=True)
+class PatientMigrationSerializer(serializers.ModelSerializer):
+    
+    # patient = serializers.CharField(write_only=True, read_only=False, required=True) 
+    patient = serializers.CharField()  
+    class Meta:
+        model = PatientMigrate  
+        
+        fields ='__all__' 
+
+    def save(self):
+        print(self.validated_data["patient"])
+        patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["patient"])
+        migrate = PatientMigrate(patient=patient, migrated_on=timezone.now(), 
+        migrated_to=self.validated_data["migrated_to"], reason=self.validated_data["reason"])
+        patient.covid_facility = self.validated_data["migrated_to"]        
+        patient.save()
+        migrate.save()
+        return migrate

@@ -48,6 +48,7 @@ class PatientManager(models.Manager):
         return self.get_queryset().search(query)
 
 
+
 class PatientProfile(TimeStamped):
     PATIENT_CONDITION = (
         ("1", ("Asymptomataic")),
@@ -94,6 +95,15 @@ class PatientProfile(TimeStamped):
         else:
             return True
 
+class PatientMigrate(TimeStamped):
+    migrated_to = models.TextField(blank=False, null=False)
+    migrated_on = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
+    reason = models.TextField(blank=False, null=False)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return ("patient : {0} , migrated to : {1} , on {2}".format(self.patient, self.migrated_to, self.migrated_on))
+        
 
 
 @receiver(post_save, sender=PatientProfile)
