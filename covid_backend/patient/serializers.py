@@ -159,7 +159,7 @@ class PatientStatusSerializer(serializers.Serializer):
         ('D', ("Death"))
     )
     model = PatientProfile
-    status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
+    patient_status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
 
  
        
