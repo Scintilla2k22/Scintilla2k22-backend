@@ -135,11 +135,11 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
         instance.patient_id = str(username)
         instance.save() 
 
-    if instance.patient_status == 'M':
-        migration = PatientMigrate.objects.filter(patient=instance)
-        if not migration.exists():
-            migration = PatientMigrate(patient=instance, migrated_on=timezone.now())        
-            migration.save()   
+    # if instance.patient_status == 'M':
+    #     migration = PatientMigrate.objects.filter(patient=instance)
+    #     if  migration.count() == 0:
+    #         migrate = PatientMigrate(patient=instance, migrated_on=timezone.now())        
+    #         migrate.save()   
 
     if instance.patient_status != 'A':
         bed = PatientBed.objects.filter(patient=instance)
