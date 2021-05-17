@@ -155,7 +155,7 @@ def change_patient_status(request, **kwargs):
     serializer = PatientStatusSerializer(data=request.data)
 
     if serializer.is_valid():        
-        object.patient_status = serializer.data.get("status")
+        object.patient_status = serializer.data.get("patient_status")
         object.save()
         response = {
             'status': status.HTTP_200_OK,
