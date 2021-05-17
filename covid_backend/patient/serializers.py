@@ -146,4 +146,5 @@ class PatientMigrationSerializer(serializers.ModelSerializer):
         patient.covid_facility = self.validated_data["migrated_to"]        
         patient.save()
         migrate.save()
+       
         return migrate

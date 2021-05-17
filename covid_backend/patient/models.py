@@ -9,10 +9,11 @@ from user.models import *
 from django.db.models import Q
 from django.conf import settings
 from health.models import *
-from datetime import datetime, timezone
+from datetime import datetime 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from health.models import *
+from django.utils import timezone
 # Create your models here.
 
 User = settings.AUTH_USER_MODEL
@@ -86,7 +87,7 @@ class PatientProfile(TimeStamped):
 
     def __str__(self):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
-
+ 
     @property
     def get_health_update(self):
         qs = self.healthstatus_set.filter(created_on__gte = datetime.date(datetime.now()))
@@ -104,6 +105,21 @@ class PatientMigrate(TimeStamped):
     def __str__(self):
         return ("patient : {0} , migrated to : {1} , on {2}".format(self.patient, self.migrated_to, self.migrated_on))
         
+    def clean(self, *args, **kwargs):
+        patient = PatientMigrate.objects.filter(patient=self.patient)
+
+        if patient.exists():
+            raise ValidationError(('Patient is already migrated to {}'.format(patient.first().migrated_to)))
+
+        return super().clean()
+
+
+    def save(self, *args, **kwargs):
+        patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id).first()
+        if patient.patient_status != 'M':
+            patient.patient_status = 'M'
+            patient.save()
+        super(PatientMigrate, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender=PatientProfile)
@@ -114,6 +130,16 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
         username = int(date)*10000 + instance.id
         instance.patient_id = str(username)
         instance.save() 
+
+    migration = PatientMigrate.objects.filter(patient=instance)
+    if not migration.exists():
+        migration = PatientMigrate(patient=instance, migrated_on=timezone.now())        
+        migration.save()   
+
+    if instance.patient_status != 'A':
+        bed = PatientBed.objects.filter(patient=instance)
+        if bed.exists():
+            bed.first().delete()
 
 class BedCount(models.Model):
     total = models.IntegerField(null=True, blank=True, default=0)
