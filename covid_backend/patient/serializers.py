@@ -67,7 +67,7 @@ class PatientBedSerializers(serializers.ModelSerializer):
         bed_history.save()
         return PatientBed
 
-class PatientMigrationSerializer(serializers.ModelSerializer):
+class PatientDetailedStatusSerializer(serializers.ModelSerializer):
     
     # patient = serializers.CharField(write_only=True, read_only=False, required=True) 
     patient_id = serializers.CharField()
@@ -88,7 +88,7 @@ class PatientMigrationSerializer(serializers.ModelSerializer):
 
 
     def save(self):
-        print(self.validated_data["patient_id"])
+        # print(self.validated_data["patient_id"])
         patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["patient_id"])
         migrate = PatientMigrate(patient=patient)
         migrate.migrated_on = timezone.now()
@@ -111,7 +111,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     ) 
     patient_id = serializers.CharField(read_only=True)   
     patient_bed = PatientBedSerializers(read_only=True)   
-    patient_migrate = PatientMigrationSerializer(read_only=True)
+    patient_migrate = PatientDetailedStatusSerializer(read_only=True)
     bed_number = serializers.IntegerField(write_only=True, read_only=False)
     bed_category = serializers.ChoiceField(choices=BED_CAT,write_only=True, read_only=False)
 

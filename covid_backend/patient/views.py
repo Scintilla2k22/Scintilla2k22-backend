@@ -167,16 +167,18 @@ def change_patient_status(request, **kwargs):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+""""
+    Detailed Description of change in status of Patient.
+"""
 @permission_classes([IsAuthenticated])
 @api_view(["POST"])
-def patient_migration(request, **kwargs):
+def patient_status(request, **kwargs):
      
-    serializer = PatientMigrationSerializer(data=request.data)
+    serializer = PatientDetailedStatusSerializer(data=request.data)
     if serializer.is_valid():        
         serializer.save()
         response = {
-          "data" : serializer.data, "status" : status.HTTP_201_CREATED  , "msg" : "Patient {0} migrated to {1}".format(request.data["patient_id"], request.data["migrated_to"])        
+          "data" : serializer.data, "status" : status.HTTP_201_CREATED       
         }
         
         return Response(response)

@@ -101,21 +101,21 @@ class PatientMigrate(TimeStamped):
     def __str__(self):
         return ("patient : {0} , migrated to : {1} , on {2}".format(self.patient, self.migrated_to, self.migrated_on))
         
-    def clean(self):
-        patient = PatientMigrate.objects.filter(patient=self.patient)
+    # def clean(self):
+    #     # patient = PatientMigrate.objects.filter(patient=self.patient)
 
-        if patient.exists() and self.id != patient.first().id :
-            raise ValidationError(('Patient is already migrated to {}'.format(patient.first().migrated_to)))
+    #     # if patient.exists() and self.id != patient.first().id :
+    #     #     raise ValidationError(('Patient is already migrated to {}'.format(patient.first().migrated_to)))
 
-        return super().clean()
+    #     return super().clean()
 
 
-    def save(self, *args, **kwargs):
-        patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id).first()
-        if patient.patient_status != 'M':
-            patient.patient_status = 'M'
-            patient.save()
-        super(PatientMigrate, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id).first()
+    #     if patient.patient_status not in ["M", "D"] :
+    #         patient.patient_status = 
+    #         patient.save()
+    #     super(PatientMigrate, self).save(*args, **kwargs)
 
 
 
