@@ -9,17 +9,19 @@ from user.models import *
 from django.db.models import Q
 from django.conf import settings
 from health.models import *
-from datetime import datetime, timezone
+from datetime import datetime 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from health.models import *
+from django.utils import timezone
 # Create your models here.
 
 User = settings.AUTH_USER_MODEL
 
-class PatientQuerySet(models.QuerySet):        # customized  inbuilt  get_queryset()  function
-    
- 
+class PatientQuerySet(models.QuerySet):         
+    """
+        Custom get_query_set , based on the lookups provided
+    """
     def search(self,query):
 
         lookup = (
@@ -86,34 +88,63 @@ class PatientProfile(TimeStamped):
 
     def __str__(self):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
-
-    @property
-    def get_health_update(self):
-        qs = self.healthstatus_set.filter(created_on__gte = datetime.date(datetime.now()))
-        if qs.exits():
-            return False
-        else:
-            return True
+ 
+ 
 
 class PatientMigrate(TimeStamped):
-    migrated_to = models.TextField(blank=False, null=False)
-    migrated_on = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
-    reason = models.TextField(blank=False, null=False)
-    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, null=True)
+    id = models.AutoField(primary_key=True)
+    migrated_to = models.TextField(blank=True, null=False)
+    migrated_on = models.DateTimeField(auto_now_add=False, auto_now=False, null=False)
+    reason = models.TextField(blank=True, null=False)
+    patient = models.OneToOneField(PatientProfile,related_name="patient_migrate",on_delete=models.CASCADE,  unique=True)
 
     def __str__(self):
         return ("patient : {0} , migrated to : {1} , on {2}".format(self.patient, self.migrated_to, self.migrated_on))
         
+    def clean(self):
+        patient = PatientMigrate.objects.filter(patient=self.patient)
+
+        if patient.exists() and self.id != patient.first().id :
+            raise ValidationError(('Patient is already migrated to {}'.format(patient.first().migrated_to)))
+
+        return super().clean()
+
+
+    def save(self, *args, **kwargs):
+        patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id).first()
+        if patient.patient_status != 'M':
+            patient.patient_status = 'M'
+            patient.save()
+        super(PatientMigrate, self).save(*args, **kwargs)
+
+
 
 
 @receiver(post_save, sender=PatientProfile)
 def create_patient_id(sender, instance=None, created=False, **kwargs):
+    """
+        1. Generate Patient ID
+        2. Check whether the migrations model is created or not when patient status changes to migrated
+        3. Deallocate bed as soon as the patient  recover , migrate or dead.
+
+    """
     if instance.patient_id is  None:
         date = str(datetime.date(datetime.now())).replace('-', '')
         # print(instance.pk)
         username = int(date)*10000 + instance.id
         instance.patient_id = str(username)
         instance.save() 
+
+    if instance.patient_status == 'M':
+        migration = PatientMigrate.objects.filter(patient=instance)
+        if not migration.exists():
+            migration = PatientMigrate(patient=instance, migrated_on=timezone.now())        
+            migration.save()   
+
+    if instance.patient_status != 'A':
+        bed = PatientBed.objects.filter(patient=instance)
+        if bed.exists():
+            bed.first().delete()
 
 class BedCount(models.Model):
     total = models.IntegerField(null=True, blank=True, default=0)
@@ -161,7 +192,9 @@ class PatientBed(Bed, TimeStamped):
         
         if self.bed_status == False:
             raise ValidationError(("Bed can't be alloted with unchecked status."))
-
+        patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id)
+        if patient.exists() and patient.first().patient_status != 'A':
+            raise ValidationError(("Patient {} is not active").format(self.patient.patient_id))
         return super().clean()
 
     def __str__(self):
