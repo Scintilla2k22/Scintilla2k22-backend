@@ -94,9 +94,10 @@ class PatientMigrationSerializer(serializers.ModelSerializer):
         migrate.migrated_on = timezone.now()
         migrate.migrated_to=self.validated_data["migrated_to"]
         migrate.reason=self.validated_data["reason"]
-        patient.covid_facility = self.validated_data["migrated_to"]        
+        patient.covid_facility = self.validated_data["migrated_to"]  
+        migrate.save()      
         patient.save()
-        migrate.save()       
+               
         return migrate
 
 
