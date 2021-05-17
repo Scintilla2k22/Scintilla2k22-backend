@@ -67,6 +67,35 @@ class PatientBedSerializers(serializers.ModelSerializer):
         bed_history.save()
         return PatientBed
 
+class PatientMigrationSerializer(serializers.ModelSerializer):
+    
+    # patient = serializers.CharField(write_only=True, read_only=False, required=True) 
+    patient_id = serializers.CharField()
+    migrated_on = serializers.DateTimeField(read_only=True)  
+    class Meta:
+        model = PatientMigrate          
+        fields = ('patient_id', 'migrated_on','migrated_to', 'reason')
+
+
+    def validate(self, attr):
+        patient = get_object_or_404(PatientProfile, patient_id=self.patient_id)
+        if patient.patient_migrate :
+            raise serializers.ValidationError({"patient" : ("Patient is not active")})
+        return attr
+
+
+    def save(self):
+        print(self.validated_data["patient_id"])
+        patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["patient_id"])
+        migrate = PatientMigrate(patient=patient )
+        migrate.migrated_on = timezone.now(), 
+        migrate.migrated_to=self.validated_data["migrated_to"]
+        migrate.reason=self.validated_data["reason"]
+        patient.covid_facility = self.validated_data["migrated_to"]        
+        patient.save()
+        migrate.save()       
+        return migrate
+
 
 
 class PatientProfileSerializers(serializers.ModelSerializer): 
@@ -77,13 +106,14 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         ('4', ("Ventillator Bed"))
     ) 
     patient_id = serializers.CharField(read_only=True)   
-    patient_bed = PatientBedSerializers(read_only=True)    
+    patient_bed = PatientBedSerializers(read_only=True)   
+    patient_migrate = PatientMigrationSerializer(read_only=True)
     bed_number = serializers.IntegerField(write_only=True, read_only=False)
     bed_category = serializers.ChoiceField(choices=BED_CAT,write_only=True, read_only=False)
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed', "bed_category", "bed_number"] 
+        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed', "bed_category", "bed_number", "patient_migrate"] 
         # fields = "__all__"
         # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
 
@@ -129,22 +159,3 @@ class PatientStatusSerializer(serializers.Serializer):
 
  
        
-class PatientMigrationSerializer(serializers.ModelSerializer):
-    
-    # patient = serializers.CharField(write_only=True, read_only=False, required=True) 
-    patient = serializers.CharField()  
-    class Meta:
-        model = PatientMigrate  
-        
-        fields ='__all__' 
-
-    def save(self):
-        print(self.validated_data["patient"])
-        patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["patient"])
-        migrate = PatientMigrate(patient=patient, migrated_on=timezone.now(), 
-        migrated_to=self.validated_data["migrated_to"], reason=self.validated_data["reason"])
-        patient.covid_facility = self.validated_data["migrated_to"]        
-        patient.save()
-        migrate.save()
-       
-        return migrate

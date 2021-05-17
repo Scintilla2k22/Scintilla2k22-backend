@@ -90,7 +90,7 @@ def get_patient_profile(request, **kwargs):
         
             
         # print(serializer.data)
-        data = {'data' : data,'msg':"ehllo",  'status' :status.HTTP_200_OK }
+        data = {'data' : data,  'status' :status.HTTP_200_OK }
         return Response(data)
     else:
         return Response({'data': "Patient  doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
