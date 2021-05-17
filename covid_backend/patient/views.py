@@ -176,7 +176,7 @@ def patient_migration(request, **kwargs):
     if serializer.is_valid():        
         serializer.save()
         response = {
-          "data" : serializer.data, "status" : status.HTTP_201_CREATED  , "msg" : "Patient {0} migrated to {1}".format(request.data["patient"], request.data["migrated_to"])        
+          "data" : serializer.data, "status" : status.HTTP_201_CREATED  , "msg" : "Patient {0} migrated to {1}".format(request.data["patient_id"], request.data["migrated_to"])        
         }
         
         return Response(response)

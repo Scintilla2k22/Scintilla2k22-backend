@@ -78,17 +78,20 @@ class PatientMigrationSerializer(serializers.ModelSerializer):
 
 
     def validate(self, attr):
-        patient = get_object_or_404(PatientProfile, patient_id=self.patient_id)
-        if patient.patient_migrate :
+        print(attr["patient_id"])
+        patient = get_object_or_404(PatientProfile, patient_id = attr["patient_id"] )
+
+        if PatientMigrate.objects.filter(patient=patient).exists() :
             raise serializers.ValidationError({"patient" : ("Patient is not active")})
+
         return attr
 
 
     def save(self):
         print(self.validated_data["patient_id"])
         patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["patient_id"])
-        migrate = PatientMigrate(patient=patient )
-        migrate.migrated_on = timezone.now(), 
+        migrate = PatientMigrate(patient=patient)
+        migrate.migrated_on = timezone.now()
         migrate.migrated_to=self.validated_data["migrated_to"]
         migrate.reason=self.validated_data["reason"]
         patient.covid_facility = self.validated_data["migrated_to"]        
