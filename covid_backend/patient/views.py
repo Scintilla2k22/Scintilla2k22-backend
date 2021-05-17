@@ -75,7 +75,7 @@ def get_searched_patients(request, **kwargs):
 
  
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def get_patient_profile(request, **kwargs):
     patient = get_object_or_404(PatientProfile,patient_id= kwargs.get('id'))
@@ -90,7 +90,7 @@ def get_patient_profile(request, **kwargs):
         
             
         # print(serializer.data)
-        data = {'data' : data,'msg':"ehllo",  'status' :status.HTTP_200_OK }
+        data = {'data' : data,  'status' :status.HTTP_200_OK }
         return Response(data)
     else:
         return Response({'data': "Patient  doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
