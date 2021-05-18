@@ -15,6 +15,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+URL = ""
 
 
 # Quick-start development settings - unsuitable for production
@@ -96,12 +97,24 @@ WSGI_APPLICATION = 'covid_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
+if URL:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'covid',
+        'USER': 'coviduser',
+        'PASSWORD': 'coviduser19',
+        'HOST': URL,
+        'PORT': '5432',
+    }
+}
+else:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+    }
 
 
 
