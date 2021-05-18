@@ -30,6 +30,7 @@ packaging==20.3
 pep517==0.8.2
 progress==1.5
 prompt-toolkit==3.0.18
+psycopg2-binary==2.8.6
 pyparsing==2.4.6
 python-crontab==2.5.1
 python-dateutil==2.8.1
