@@ -27,7 +27,7 @@ SECRET_KEY = '!)m%4b=l59e)it75&73@a*lty0$n8v(1(ej!=ve5xei6xhlw(4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://ukcovid19.in', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

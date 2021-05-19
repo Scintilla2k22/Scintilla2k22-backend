@@ -71,6 +71,10 @@ class PatientProfile(TimeStamped):
         ("M", ("migrated")),
         ('D', ("death"))
     )
+    COVID_STATUS = (
+        ("S", ("suspect")),
+        ("P", ("positive"))   
+    )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, blank=False, null=False)
     patient_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
@@ -79,6 +83,8 @@ class PatientProfile(TimeStamped):
     contact_number = models.CharField(max_length=255, blank=True, null=True)
     address = models.TextField(null=True, blank=True)
     patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
+    covid_status = models.CharField(choices=COVID_STATUS, max_length=40, default="P")
+    remark = models.TextField(blank=True, null=True, default=" ")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
     health_condition = models.CharField(choices=PATIENT_CONDITION, max_length=30, null=False)
     objects = PatientManager()
