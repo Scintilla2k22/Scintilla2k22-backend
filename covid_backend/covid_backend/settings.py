@@ -116,6 +116,16 @@ else:
     }
 }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'covid',
+        'USER': 'coviduser',
+        'PASSWORD': 'coviduser19',
+        'HOST': URL,
+        'PORT': '5432',
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 

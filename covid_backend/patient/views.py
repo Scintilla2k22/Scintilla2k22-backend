@@ -9,7 +9,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from.models import *
-
+from django.utils.timezone import datetime
 User = settings.AUTH_USER_MODEL
 
 
@@ -130,7 +130,18 @@ def get_alloted_beds(request, **kwargs):
     icu_bed = PatientBed.objects.filter(bed_status=True, bed_category="3")
     ventillator_bed = PatientBed.objects.filter(bed_status=True, bed_category="4")
     serializers = PatientBedSerializers(total_alloted_bed, many=True)
+
+    # for count of patients
+    total_recovered = PatientProfile.objects.filter(patient_status="R", created_on__date=datetime.today().date())
+    total_migrated = PatientProfile.objects.filter(patient_status="M", created_on__date=datetime.today().date())
+    total_death = PatientProfile.objects.filter(patient_status="D", created_on__date=datetime.today().date())
     
+    patient_status = { "recovered" : total_recovered.count() , 
+            "migrated" : total_migrated.count(),
+            "death" : total_death.count(),
+            
+            }
+
     alloted_beds = { "total" : total_alloted_bed.count() , 
             "general" : general_bed.count(),
             "oxygen" : oxy_bed.count(),
@@ -143,7 +154,7 @@ def get_alloted_beds(request, **kwargs):
         "icu" : total_icu,
         "ventillator" : total_venti    }
 
-    data = {"data":serializers.data, "alloted_beds": alloted_beds,"total_beds":total_beds, "status": status.HTTP_200_OK}
+    data = {"data": serializers.data, "alloted_beds": alloted_beds, "total_beds": total_beds, "patient_status": patient_status, "status": status.HTTP_200_OK}
 
     return Response(data)
 
