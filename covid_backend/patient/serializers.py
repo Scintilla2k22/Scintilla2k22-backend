@@ -124,7 +124,12 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     def validate(self, attr):
         qs = PatientBed.objects.filter(bed_number=attr["bed_number"])  
         if qs.exists() and qs.first().bed_status:
-            raise serializers.ValidationError({"bed_number" : ["Bed  already alloted"]})        
+            raise serializers.ValidationError({"bed_number" : ["Bed already alloted"]})
+
+        tbed = BedCount.objects.all()
+        if tbed.count() < 1 or int(attr["bed_number"]) > tbed[0].total:
+            raise serializers.ValidationError({"bed_number" : ["Invalid Bed number"]})
+
         return attr
 
     def save(self):            

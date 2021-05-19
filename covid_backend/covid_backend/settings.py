@@ -27,7 +27,7 @@ SECRET_KEY = '!)m%4b=l59e)it75&73@a*lty0$n8v(1(ej!=ve5xei6xhlw(4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://ukcovid19.in', 'https://127.0.0.1:8000/']
 
 
 # Application definition
@@ -138,8 +138,8 @@ AUTH_USER_MODEL = 'user.CustomUser'
 
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = (
-#        'http://localhost:4200',
-#        'http://ukcovid19.in',
+#        'https://localhost:127.0.0.1',
+#        'https://ukcovid19.in',
 # )
 
 # Internationalization
