@@ -16,6 +16,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 URL = ""
+# URL = "covid.c9uma936bctg.us-east-2.rds.amazonaws.com"
 
 
 # Quick-start development settings - unsuitable for production
@@ -116,16 +117,16 @@ else:
     }
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'covid',
-        'USER': 'coviduser',
-        'PASSWORD': 'coviduser19',
-        'HOST': URL,
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'covid',
+#         'USER': 'coviduser',
+#         'PASSWORD': 'coviduser19',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
