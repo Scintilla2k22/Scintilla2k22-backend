@@ -72,11 +72,11 @@ class PatientProfile(TimeStamped):
         ('D', ("death"))
     )
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50, blank=False, null=False)
-    patient_id = models.CharField(max_length=50, blank=True, null=True, unique=True)
+    name = models.CharField(max_length=255, blank=False, null=False)
+    patient_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=True, blank=True)
     age  = models.IntegerField(null=True, blank=True)
-    contact_number = models.IntegerField(null=True, blank=True)    
+    contact_number = models.CharField(max_length=255, blank=True, null=True)
     address = models.TextField(null=True, blank=True)
     patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
@@ -172,7 +172,7 @@ class Bed(models.Model):
         ('3', ("ICU Bed")),
         ('4', ("Ventillator Bed"))
     )
-    bed_number = models.IntegerField(null=False, blank=False)
+    bed_number = models.CharField(max_length=255,null=False, blank=False)
     bed_category = models.CharField(choices=BED_CAT, max_length=30)    
 
     class Meta:
@@ -204,7 +204,7 @@ class PatientBed(Bed, TimeStamped):
 
 
 class PatientBedHistory(Bed, TimeStamped):    
-    patient = models.CharField(max_length=30, null=False, blank=False)
+    patient = models.CharField(max_length=255, null=False, blank=False)
 
     def __str__(self):
         return "{0} , patient : {1}".format(self.get_bed_category_display(), self.patient)

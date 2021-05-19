@@ -14,7 +14,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class CustomUser(AbstractUser):
-    username = models.CharField(max_length=50, unique=True, blank=False, null=False)   
+    username = models.CharField(max_length=255, unique=True, blank=False, null=False)   
     is_doctor = models.BooleanField(default=False, blank=False, null=False)
     is_nurse = models.BooleanField(default=False, blank=False, null=False)        
     is_admin = models.BooleanField(default=False, blank=False, null=False)
