@@ -137,10 +137,10 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'user.CustomUser'
 
 CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ORIGIN_WHITELIST = (
-#        'https://localhost:127.0.0.1',
-#        'https://ukcovid19.in',
-# )
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3000',
+#     'https://ukcovid19.in',
+# ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
