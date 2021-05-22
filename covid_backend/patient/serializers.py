@@ -158,8 +158,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         
         if  attr["patient_bed"][0]["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
             attr["patient_bed"][0]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
-                attr["patient_bed"][0]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
-                    attr["patient_bed"][0]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen :
+                attr["patient_bed"][0]["bed_category"]=="3" and catg_validate.count() >= bed_count.oxygen or \
+                    attr["patient_bed"][0]["bed_category"]=="4" and catg_validate.count() >= bed_count.oxygen :
             raise serializers.ValidationError({"bed_category" : ("Beds are full")})
 
         return attr
