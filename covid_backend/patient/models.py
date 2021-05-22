@@ -244,7 +244,7 @@ class Bed(models.Model):
 
 
 class PatientBed(Bed, TimeStamped):    
-    patient = models.OneToOneField(PatientProfile,related_name="patient_bed", on_delete=models.CASCADE,  unique=True)   
+    patient = models.OneToOneField(PatientProfile, related_name="patient_bed", on_delete=models.CASCADE,  null=True, blank=True)   
     bed_status = models.BooleanField(default=True)
     def clean(self):
         self.bed_id = "W{0}-F{1}-{2}".format(self.ward ,self.floor,self.bed_number)
