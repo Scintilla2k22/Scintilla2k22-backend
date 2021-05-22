@@ -67,6 +67,12 @@ class PatientBedSerializers(serializers.ModelSerializer):
         bed_history.save()
         return PatientBed
 
+class PatientProfileBedSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PatientBed
+        fields = "__all__"
+
+
 class PatientDetailedStatusSerializer(serializers.ModelSerializer):
     
     # patient = serializers.CharField(write_only=True, read_only=False, required=True) 
@@ -124,8 +130,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         ('3', ("ICU Bed")),
         ('4', ("Ventillator Bed"))
     ) 
-    patient_id = serializers.CharField(read_only=True)   
-    patient_bed = PatientBedSerializers(many=True)   
+    patient_id = serializers.CharField(read_only=True, write_only=False)   
+    patient_bed = PatientProfileBedSerializers(many=True)   
     patient_migrate = PatientDetailedStatusSerializer(read_only=True)
     patient_covid_test = PatientCovidTestSerializers()
     patient_vaccine_status = PatientVaccinationSerializers()
@@ -147,17 +153,17 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         if tbed.count() < 1 :
             raise serializers.ValidationError({"bed_number" : ["Invalid Bed number"]})
 
-        catg_validate = PatientBed.objects.filter(bed_category=attr["bed_category"])
+        catg_validate = PatientBed.objects.filter(bed_category=attr["patient_bed"][0]["bed_category"])
         bed_count = tbed.first()
         
-        if  attr["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
-            attr["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
-                attr["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
-                    attr["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen :
+        if  attr["patient_bed"][0]["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
+            attr["patient_bed"][0]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
+                attr["patient_bed"][0]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
+                    attr["patient_bed"][0]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen :
             raise serializers.ValidationError({"bed_category" : ("Beds are full")})
 
         return attr
-        
+
 
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])
