@@ -73,7 +73,7 @@ class PatientProfile(TimeStamped):
         ("M", ("migrated")),
         ('D', ("death"))
     )
-    
+
     COVID_STATUS = (
         ("S", ("Suspect")),
         ("P", ("Positive")),
@@ -117,7 +117,7 @@ class Vaccine(TimeStamped):
                     ("2", ("Covaxin")))
     
     type = models.CharField(choices=VACCINE_TYPE,blank=True,  max_length=266)
-    vaccinated_on = models.DateTimeField(auto_now=False,blank=True, auto_now_add=False)
+    vaccinated_on = models.DateField(auto_now=False,blank=True, auto_now_add=False)
     patient_vaccine = models.ForeignKey(PatientVaccinationStatus, related_name="vaccine_status", on_delete=models.CASCADE, null=True)
 
     def __str__(self):
