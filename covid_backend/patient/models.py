@@ -1,4 +1,5 @@
-from django.db import models 
+from django.db import models
+from django.db.models.query_utils import select_related_descend 
 from user.models import *
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_save, post_delete
@@ -33,7 +34,8 @@ class PatientQuerySet(models.QuerySet):
                 Q(address__icontains = query)|
                 Q(covid_facility__icontains = query)|
                 Q(created_on__icontains= query)|
-                Q(contact_number__iexact=query)             
+                Q(contact_number__iexact=query)
+                         
                 )
 
         return self.filter(lookup)
@@ -73,8 +75,10 @@ class PatientProfile(TimeStamped):
     )
     COVID_STATUS = (
         ("S", ("suspect")),
-        ("P", ("positive"))   
+        ("P", ("positive")),
+        ("N", ("Negative")) 
     )
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, blank=False, null=False)
     patient_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
@@ -87,6 +91,8 @@ class PatientProfile(TimeStamped):
     remark = models.TextField(blank=True, null=True, default=" ")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
     health_condition = models.CharField(choices=PATIENT_CONDITION, max_length=30, null=False)
+
+
     objects = PatientManager()
     class Meta:
         ordering = ['updated_on']
@@ -94,8 +100,50 @@ class PatientProfile(TimeStamped):
 
     def __str__(self):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
- 
- 
+
+
+
+class PatientVaccinationStatus(TimeStamped):
+    is_vaccinated = models.BooleanField(blank=True, null=True)   
+    patient = models.OneToOneField(PatientProfile,related_name="patient_vaccine_status" ,  on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "{0} : {1}".format(self.patient, "vaccinated" if self.is_vaccinated else "not vaccinated")
+
+
+class Vaccine(TimeStamped):
+    VACCINE_TYPE =  ( ("1", ("Covishield")),
+                    ("2", ("Covaxin")))
+    
+    type = models.CharField(choices=VACCINE_TYPE,blank=True,  max_length=266)
+    vaccinated_on = models.DateTimeField(auto_now=False,blank=True, auto_now_add=False)
+    patient_vaccine = models.ForeignKey(PatientVaccinationStatus, related_name="vaccine_status", on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "{0} :  {1} | {2}".format(self.patient_vaccine.patient.patient_id, self.get_type_display(), self.vaccinated_on)
+
+class PatientCovidTest(TimeStamped):
+    TEST_TYPE = (
+        ("1", ("Rapid Antigen")),
+        ("2", ("RT-PCR")),
+        ("3", ("TrueNat")),
+    )
+
+    TEST_RESULT = (
+        ("1", ("Positive")),
+        ("2", ("Negative")),
+        ("3", ("Awaited")),
+        ("4", ("Rejected"))
+    )
+    
+    is_tested = models.BooleanField(blank=True, null=True)
+    type = models.CharField(choices=TEST_TYPE, null=True, blank=True, max_length=266)
+    result = models.CharField(choices=TEST_RESULT, null=True, blank=True,  max_length=266)
+    patient = models.OneToOneField(PatientProfile,related_name="patient_covid_test", on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "{0} | {1} | {2} ".format(self.patient, self.get_type_display(), self.get_result_display())
+
 
 class PatientMigrate(TimeStamped):
     id = models.AutoField(primary_key=True)
