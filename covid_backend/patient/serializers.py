@@ -190,14 +190,16 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         if pre_bed.exists():
             pre_bed.first().delete()
 
-        patient_bed = PatientBed(patient = patient)
-        bed_history = PatientBedHistory(patient=patient)
         if len(self.validated_data["patient_bed"]) > 0 :
+            patient_bed = PatientBed(patient = patient)
+            bed_history = PatientBedHistory(patient=patient)
             patient_bed.bed_category = bed_history.bed_category = self.validated_data["patient_bed"][0]["bed_category"]
             patient_bed.bed_number = bed_history.bed_number = self.validated_data["patient_bed"][0]["bed_number"]
+            patient_bed.ward = bed_history.ward = self.validated_data["patient_bed"][0]["ward"]
+            patient_bed.floor = bed_history.floor = self.validated_data["patient_bed"][0]["floor"]
             patient_bed.bed_status = bed_history.bed_status = True
-        patient_bed.save()
-        bed_history.save()   
+            patient_bed.save()
+            bed_history.save()   
         # ................................................
 
 
