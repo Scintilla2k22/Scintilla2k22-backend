@@ -112,7 +112,7 @@ class VaccineSerializers(serializers.ModelSerializer):
         fields = "__all__"
 
 class PatientVaccinationSerializers(serializers.ModelSerializer):
-    vaccine_status = VaccineSerializers(many=True)
+    vaccine_status = VaccineSerializers(many=True, required=False, allow_null=True)
     class Meta:
         model = PatientVaccinationStatus
         fields = ["is_vaccinated", "vaccine_status"]
