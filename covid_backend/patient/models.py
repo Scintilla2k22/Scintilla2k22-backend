@@ -226,35 +226,56 @@ class Bed(models.Model):
         ('3', ("ICU Bed")),
         ('4', ("Ventillator Bed"))
     )
-    bed_number = models.CharField(max_length=255,null=False, blank=False)
+
+    FLOOR =   ( ("1", ("Floor 1")),
+        ("2", ("Floor 2")),
+        ('3', ("Floor 3")),
+        ('4', ("Floor 4"))
+    )
+
+    bed_number = models.IntegerField(null=False, blank=False)
+    bed_id = models.CharField(max_length=266, null=True, blank=True)
     bed_category = models.CharField(choices=BED_CAT, max_length=30)    
+    floor = models.CharField(choices=FLOOR, max_length=266, blank=True)
+    ward = models.CharField(choices=(("A" , ("Ward A")), ("B", ("Ward B"))), max_length=266, blank=True)
 
     class Meta:
         abstract = True
-
-
 
 
 class PatientBed(Bed, TimeStamped):    
     patient = models.OneToOneField(PatientProfile,related_name="patient_bed", on_delete=models.CASCADE,  unique=True)   
     bed_status = models.BooleanField(default=True)
     def clean(self):
-        qs = PatientBed.objects.filter(bed_number=self.bed_number)       
+        self.bed_id = "W{0}-F{1}-{2}".format(self.ward ,self.floor,self.bed_number)
 
-        if  qs.exists() and qs.first().bed_status and  str(self.patient.patient_id) != str(qs.first().patient.patient_id) :
+        qs = PatientBed.objects.filter(bed_id=self.bed_id)       
+
+        if  qs.exists()  and  str(self.patient.patient_id) != str(qs.first().patient.patient_id) :
             raise ValidationError(('Bed already alloted'))
         
         if self.bed_status == False:
             raise ValidationError(("Bed can't be alloted with unchecked status."))
+
         patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id)
         if patient.exists() and patient.first().patient_status != 'A':
             raise ValidationError(("Patient {} is not active").format(self.patient.patient_id))
+
+        catg_validate = PatientBed.objects.filter(bed_category=self.bed_category)
+        bed_count = BedCount.objects.all().first()
+        
+        if  self.bed_category=="1" and catg_validate.count() >= bed_count.general or \
+            self.bed_category=="2" and catg_validate.count() >= bed_count.oxygen or \
+                self.bed_category=="2" and catg_validate.count() >= bed_count.oxygen or \
+                    self.bed_category=="2" and catg_validate.count() >= bed_count.oxygen :
+            raise ValidationError({"bed_category" : ("Beds are full")})
+
         return super().clean()
 
+
     def __str__(self):
-        return "{0} ,  Status : {1}".format(self.get_bed_category_display(), "Taken" if self.bed_status  else "Free")
-
-
+        return "{0} ,  Status : {1}".format(self.bed_id, "Taken" if self.bed_status  else "Free")
+ 
 
 
 class PatientBedHistory(Bed, TimeStamped):    
