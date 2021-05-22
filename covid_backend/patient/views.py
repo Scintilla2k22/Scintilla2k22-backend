@@ -56,6 +56,10 @@ class PatientProfileView(APIView):
             return Response({'data': "Patient doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
 
 
+ 
+
+
+
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def get_searched_patients(request, **kwargs):

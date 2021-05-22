@@ -7,3 +7,7 @@ admin.site.register(PatientBedHistory)
 admin.site.register(PatientBed)
 admin.site.register(BedCount)
 admin.site.register(PatientMigrate)
+admin.site.register(PatientCovidTest)
+admin.site.register(PatientVaccinationStatus)
+admin.site.register(Vaccine)
+ 
