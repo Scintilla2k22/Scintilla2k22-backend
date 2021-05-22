@@ -105,7 +105,7 @@ class PatientProfile(TimeStamped):
 
 class PatientVaccinationStatus(TimeStamped):
     is_vaccinated = models.BooleanField(blank=True, null=True)   
-    patient = models.OneToOneField(PatientProfile,related_name="patient_vaccine_status" ,  on_delete=models.CASCADE, null=True, blank=True)
+    patient = models.OneToOneField(PatientProfile,related_name="patient_vaccine_status" ,  on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return "{0} : {1}".format(self.patient, "vaccinated" if self.is_vaccinated else "not vaccinated")
@@ -115,12 +115,12 @@ class Vaccine(TimeStamped):
     VACCINE_TYPE =  ( ("1", ("Covishield")),
                     ("2", ("Covaxin")))
     
-    type = models.CharField(choices=VACCINE_TYPE, blank=True, null=True,  max_length=266)
-    vaccinated_on = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
-    vaccine = models.ForeignKey(PatientVaccinationStatus,related_name="vaccine_status", on_delete=models.CASCADE, null=True, blank=True)
+    type = models.CharField(choices=VACCINE_TYPE,blank=True,  max_length=266)
+    vaccinated_on = models.DateTimeField(auto_now=False,blank=True, auto_now_add=False)
+    patient_vaccine = models.ForeignKey(PatientVaccinationStatus, related_name="vaccine_status", on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return "{0} :  {1} | {2}".format(self.vaccine.patient.patient_id, self.get_type_display(), self.vaccinated_on)
+        return "{0} :  {1} | {2}".format(self.patient_vaccine.patient.patient_id, self.get_type_display(), self.vaccinated_on)
 
 class PatientCovidTest(TimeStamped):
     TEST_TYPE = (
