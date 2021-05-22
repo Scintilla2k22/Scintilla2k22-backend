@@ -137,15 +137,27 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
 
     def validate(self, attr):
-        qs = PatientBed.objects.filter(bed_number=attr["patient_bed"][0]["bed_number"])  
+        bed_id = "W{0}-F{1}-{2}".format(attr["patient_bed"][0]["ward"], attr["patient_bed"][0]["floor"], attr["patient_bed"][0]["bed_number"])
+
+        qs = PatientBed.objects.filter(bed_id=bed_id)  
         if qs.exists() and qs.first().bed_status:
             raise serializers.ValidationError({"bed_number" : ["Bed already alloted"]})
 
         tbed = BedCount.objects.all()
-        if tbed.count() < 1 or int(attr["patient_bed"][0]["bed_number"]) > tbed[0].total:
+        if tbed.count() < 1 :
             raise serializers.ValidationError({"bed_number" : ["Invalid Bed number"]})
 
+        catg_validate = PatientBed.objects.filter(bed_category=attr["bed_category"])
+        bed_count = tbed.first()
+        
+        if  attr["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
+            attr["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
+                attr["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
+                    attr["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen :
+            raise serializers.ValidationError({"bed_category" : ("Beds are full")})
+
         return attr
+        
 
     def save(self):            
         patient = PatientProfile(name=self.validated_data["name"])
@@ -166,12 +178,15 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
         patient_bed = PatientBed(patient = patient)
         bed_history = PatientBedHistory(patient=patient)
-        patient_bed.bed_category = bed_history.bed_category = self.validated_data["patient_bed"][0]["bed_category"]
-        patient_bed.bed_number = bed_history.bed_number = self.validated_data["patient_bed"][0]["bed_number"]
-        patient_bed.bed_status = bed_history.bed_status = True
+        if len(self.validated_data["patient_bed"]) > 0 :
+            patient_bed.bed_category = bed_history.bed_category = self.validated_data["patient_bed"][0]["bed_category"]
+            patient_bed.bed_number = bed_history.bed_number = self.validated_data["patient_bed"][0]["bed_number"]
+            patient_bed.bed_status = bed_history.bed_status = True
         patient_bed.save()
         bed_history.save()   
         # ................................................
+
+
 
         # Patient Covid Status ......................
         patient_covid = PatientCovidTest(patient=patient)
@@ -182,6 +197,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient_covid.save()     
 
         # .......................................
+
+
 
         # Patient Vaccination Status.................
         patient_vaccine = PatientVaccinationStatus(patient=patient, is_vaccinated=self.validated_data["patient_vaccine_status"]["is_vaccinated"])
