@@ -73,9 +73,10 @@ class PatientProfile(TimeStamped):
         ("M", ("migrated")),
         ('D', ("death"))
     )
+    
     COVID_STATUS = (
-        ("S", ("suspect")),
-        ("P", ("positive")),
+        ("S", ("Suspect")),
+        ("P", ("Positive")),
         ("N", ("Negative")) 
     )
 
@@ -199,6 +200,7 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
         bed = PatientBed.objects.filter(patient=instance)
         if bed.exists():
             bed.first().delete()
+
 
 class BedCount(models.Model):
     total = models.IntegerField(null=True, blank=True, default=0)

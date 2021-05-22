@@ -172,9 +172,17 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient.contact_number = self.validated_data["contact_number"]     
         patient.gender = self.validated_data["gender"]        
         patient.address = self.validated_data["address"]    
-        patient.health_condition = self.validated_data["health_condition"]    
-        patient.covid_status = self.validated_data["covid_status"]  
+        patient.health_condition = self.validated_data["health_condition"]         
         patient.remark = self.validated_data["remark"]      
+        
+        if self.validated_data["patient_covid_test"] and self.validated_data["patient_covid_test"]["is_tested"]:
+            if self.validated_data["patient_covid_test"]["result"] == "1":
+                patient.covid_status = "P"
+            elif self.validated_data["patient_covid_test"]["result"] == "2":
+                patient.covid_status = "N"
+        else:
+            patient.covid_status = "S"
+
         patient.save()
 
         # Patient Bed model .......
@@ -194,7 +202,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
 
 
-        # Patient Covid Status ......................
+        # Patient Covid Test Status ......................
         patient_covid = PatientCovidTest(patient=patient)
         if self.validated_data["patient_covid_test"]:
             patient_covid.is_tested = self.validated_data["patient_covid_test"]["is_tested"]
