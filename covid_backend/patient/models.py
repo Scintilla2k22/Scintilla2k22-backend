@@ -268,8 +268,8 @@ class PatientBed(Bed, TimeStamped):
         
         if  self.bed_category=="1" and catg_validate.count() >= bed_count.general or \
             self.bed_category=="2" and catg_validate.count() >= bed_count.oxygen or \
-                self.bed_category=="3" and catg_validate.count() >= bed_count.oxygen or \
-                    self.bed_category=="4" and catg_validate.count() >= bed_count.oxygen :
+                self.bed_category=="3" and catg_validate.count() >= bed_count.icu or \
+                    self.bed_category=="4" and catg_validate.count() >= bed_count.ventillator :
             raise ValidationError({"bed_category" : ("Beds are full")})
 
         return super().clean()
