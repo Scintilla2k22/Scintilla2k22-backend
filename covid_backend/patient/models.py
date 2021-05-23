@@ -276,6 +276,7 @@ class PatientBed(Bed, TimeStamped):
 
 
     def __str__(self):
+        self.bed_id = "W{0}-F{1}-{2}".format(self.ward ,self.floor,self.bed_number)
         return "{0} ,  Status : {1}".format(self.bed_id, "Taken" if self.bed_status  else "Free")
  
 
