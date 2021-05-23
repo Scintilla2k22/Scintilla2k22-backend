@@ -197,6 +197,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
             patient_bed.bed_number = bed_history.bed_number = self.validated_data["patient_bed"]["bed_number"]
             patient_bed.ward = bed_history.ward = self.validated_data["patient_bed"]["ward"]
             patient_bed.floor = bed_history.floor = self.validated_data["patient_bed"]["floor"]
+            patient_bed.bed_id = bed_history.bed_id = "W{0}-F{1}-{2}".format(self.validated_data["patient_bed"]["ward"], self.validated_data["patient_bed"]["floor"], self.validated_data["patient_bed"]["bed_number"])
             patient_bed.bed_status = bed_history.bed_status = True
             patient_bed.save()
             bed_history.save()   
