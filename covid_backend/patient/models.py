@@ -160,7 +160,7 @@ class PatientMigrate(TimeStamped):
 
 
 class PatientDeath(TimeStamped):
-    expired_on = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
+    expired_on = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     reason = models.TextField(blank=True, null=True)
     patient = models.OneToOneField(PatientProfile, on_delete=models.CASCADE, null=True)
 
