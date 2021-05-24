@@ -262,7 +262,8 @@ class PatientStatusSerializer(serializers.Serializer):
         ("A", ("Active")),
         ("R", ("Recovered")),
         ("M", ("Migrated")),
-        ('D', ("Death"))
+        ('D', ("Death")),
+        ('H', ("Home Isolated"))
     )
     model = PatientProfile
     patient_status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)

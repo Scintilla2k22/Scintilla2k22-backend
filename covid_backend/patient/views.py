@@ -64,8 +64,8 @@ class PatientProfileView(APIView):
 @api_view(['GET'])
 def get_searched_patients(request, **kwargs):
     query = kwargs.get("query").lower()
-    status_list = ("active", "migrated", "death", "recovered")
-    status_dict = {"active" : "A", "migrated" : "M", "death" : "D", "recovered" : "R"}
+    status_list = ("active", "migrated", "death", "recovered", "home_isolated")
+    status_dict = {"active" : "A", "migrated" : "M", "death" : "D", "recovered" : "R", "home_isolated" : "H"}
 
     if query in status_list:
         qs  = PatientProfile.objects.filter(patient_status=status_dict[query])
@@ -104,11 +104,7 @@ def get_patient_profile(request, **kwargs):
 @permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def bed_allotment(request):
-    serializer = PatientBedSerializers( data = request.data)
-    # qs = PatientBed.objects.filter(bed_number=request.data["bed_number"])  
-    # if qs.exists() and qs.first().bed_status:
-    #     return Response({"data": "Bed already alloted ", "status" : status.HTTP_400_BAD_REQUEST })
-    
+    serializer = PatientBedSerializers( data = request.data)    
     if serializer.is_valid():
         serializer.save()
         return Response({"data": request.data , "status":status.HTTP_201_CREATED, "msg" : "Bed alloted to patient {}".format(request.data["patient_id"]) })
