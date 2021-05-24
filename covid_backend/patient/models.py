@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields import related
 from django.db.models.query_utils import select_related_descend 
 from user.models import *
 from django.dispatch import receiver
@@ -162,7 +163,7 @@ class PatientMigrate(TimeStamped):
 class PatientDeath(TimeStamped):
     expired_on = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     reason = models.TextField(blank=True, null=True)
-    patient = models.OneToOneField(PatientProfile, on_delete=models.CASCADE, null=True)
+    patient = models.OneToOneField(PatientProfile,related_name="patient_death", on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return "patient : {0} | Expired on : {1} | Reason : {2}".format(self.patient.patient_id, self.expired_on, self.reason)
