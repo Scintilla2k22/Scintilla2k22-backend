@@ -156,7 +156,19 @@ class PatientMigrate(TimeStamped):
 
     def __str__(self):
         return ("patient : {0} , migrated to : {1} , on {2}".format(self.patient, self.migrated_to, self.migrated_on))
-        
+
+
+
+class PatientDeath(TimeStamped):
+    expired_on = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
+    reason = models.TextField(blank=True, null=True)
+    patient = models.OneToOneField(PatientProfile, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return "patient : {0} | Expired on : {1} | Reason : {2}".format(self.patient.patient_id, self.expired_on, self.reason)
+
+
+
     # def clean(self):
     #     # patient = PatientMigrate.objects.filter(patient=self.patient)
 
@@ -249,8 +261,13 @@ class Bed(models.Model):
 class PatientBed(Bed, TimeStamped):    
     patient = models.OneToOneField(PatientProfile, related_name="patient_bed", on_delete=models.CASCADE,  null=True, blank=True)   
     bed_status = models.BooleanField(default=True)
+
+
     def clean(self):
         self.bed_id = "W{0}-F{1}-{2}".format(self.ward ,self.floor,self.bed_number)
+
+        if self.patient.patient_status != "A":
+            raise ValidationError(("Bed allotment for {0} patient cannot done".format(self.patient.get_patient_status_display())))
 
         qs = PatientBed.objects.filter(bed_id=self.bed_id)       
 
@@ -259,10 +276,6 @@ class PatientBed(Bed, TimeStamped):
         
         if self.bed_status == False:
             raise ValidationError(("Bed can't be alloted with unchecked status."))
-
-        patient = PatientProfile.objects.filter(patient_id=self.patient.patient_id)
-        if patient.exists() and patient.first().patient_status != 'A':
-            raise ValidationError(("Patient {} is not active").format(self.patient.patient_id))
 
         catg_validate = PatientBed.objects.filter(bed_category=self.bed_category)
         bed_count = BedCount.objects.all().first()
