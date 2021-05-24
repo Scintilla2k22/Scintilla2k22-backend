@@ -71,7 +71,8 @@ class PatientProfile(TimeStamped):
         ("A", ("active")),
         ("R", ("recovered")),
         ("M", ("migrated")),
-        ('D', ("death"))
+        ('D', ("death")),
+        ('H', ("home_isolated"))
     )
 
     COVID_STATUS = (
