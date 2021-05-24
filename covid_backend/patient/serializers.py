@@ -98,7 +98,7 @@ class PatientProfileBedSerializers(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PatientDetailedStatusSerializer(serializers.ModelSerializer):
+class PatientMigrateSerializers(serializers.ModelSerializer):
     
     # patient = serializers.CharField(write_only=True, read_only=False, required=True) 
     patient_id = serializers.CharField()
@@ -125,11 +125,42 @@ class PatientDetailedStatusSerializer(serializers.ModelSerializer):
         migrate.migrated_on = timezone.now()
         migrate.migrated_to=self.validated_data["migrated_to"]
         migrate.reason=self.validated_data["reason"]
-        patient.covid_facility = self.validated_data["migrated_to"]  
+        patient.patient_status = 'M'          
         migrate.save()      
         patient.save()
                
         return migrate
+
+class PatientDeathSerializers(serializers.ModelSerializer):
+    
+    patient_id = serializers.CharField()
+    class Meta:
+        model = PatientDeath         
+        fields = ('patient_id', 'expired_on', 'reason')
+
+
+    def validate(self, attr):
+        print(attr["patient_id"])
+        patient = get_object_or_404(PatientProfile, patient_id = attr["patient_id"] )
+
+        if PatientDeath.objects.filter(patient=patient).exists() :
+            raise serializers.ValidationError(("Patient is not active"))
+
+        return attr
+
+
+    def save(self):
+        # print(self.validated_data["patient_id"])
+        patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["patient_id"])
+        death = PatientDeath(patient=patient)
+        death.expired_on = self.validated_data["expired_on"]
+        death.reason=self.validated_data["reason"]
+        patient.patient_status = 'D'
+        death.save()
+        patient.save()               
+        return death
+
+
 
 class PatientCovidTestSerializers(serializers.ModelSerializer):
     class Meta:
@@ -157,13 +188,14 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     ) 
     patient_id = serializers.CharField(read_only=True, write_only=False)   
     patient_bed = PatientProfileBedSerializers()   
-    patient_migrate = PatientDetailedStatusSerializer(read_only=True)
+    patient_migrate = PatientMigrateSerializers(read_only=True)
+    patient_death = PatientDeathSerializers(read_only=True)
     patient_covid_test = PatientCovidTestSerializers()
     patient_vaccine_status = PatientVaccinationSerializers()
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed',  'patient_migrate', 'covid_status', 'remark', 'patient_covid_test', 'patient_vaccine_status'] 
+        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed',  'patient_migrate','patient_death',  'covid_status', 'remark', 'patient_covid_test', 'patient_vaccine_status'] 
         # fields = "__all__"
         # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
 

@@ -179,13 +179,13 @@ def change_patient_status(request, **kwargs):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 """"
-    Detailed Description of change in status of Patient.
+  Patient Migrations to another Covid facility
 """
 @permission_classes([IsAuthenticated])
 @api_view(["POST"])
-def patient_status(request, **kwargs):
+def patient_migrate_status(request, **kwargs):
      
-    serializer = PatientDetailedStatusSerializer(data=request.data)
+    serializer = PatientMigrateSerializers(data=request.data)
     if serializer.is_valid():        
         serializer.save()
         response = {
@@ -195,6 +195,29 @@ def patient_status(request, **kwargs):
         return Response(response)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+""""
+  Patient Death
+"""
+@permission_classes([IsAuthenticated])
+@api_view(["POST"])
+def patient_death_status(request, **kwargs):
+     
+    serializer = PatientDeathSerializers(data=request.data)
+    if serializer.is_valid():        
+        serializer.save()
+        response = {
+          "data" : serializer.data, "status" : status.HTTP_201_CREATED       
+        }
+        
+        return Response(response)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 
