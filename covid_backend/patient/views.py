@@ -132,9 +132,9 @@ def get_alloted_beds(request, **kwargs):
     serializers = PatientBedSerializers(total_alloted_bed, many=True)
 
     # for count of patients
-    total_recovered = PatientProfile.objects.filter(patient_status="R", created_on__date=datetime.today().date())
-    total_migrated = PatientProfile.objects.filter(patient_status="M", created_on__date=datetime.today().date())
-    total_death = PatientProfile.objects.filter(patient_status="D", created_on__date=datetime.today().date())
+    total_recovered = PatientProfile.objects.filter(patient_status="R", updated_on__date=datetime.today().date())
+    total_migrated = PatientProfile.objects.filter(patient_status="M", updated_on__date=datetime.today().date())
+    total_death = PatientProfile.objects.filter(patient_status="D", updated_on__date=datetime.today().date())
     
     patient_status = { "recovered" : total_recovered.count() , 
             "migrated" : total_migrated.count(),
