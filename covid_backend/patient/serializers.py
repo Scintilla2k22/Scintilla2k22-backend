@@ -267,7 +267,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
         # Patient Covid Test Status ......................
         patient_covid = PatientCovidTest(patient=patient)
-        if self.validated_data["patient_covid_test"]["is_tested"] and self.validated_data["patient_covid_test"]:
+        if self.validated_data["patient_covid_test"] and  self.validated_data["patient_covid_test"]["is_tested"]:
             patient_covid.is_tested = self.validated_data["patient_covid_test"]["is_tested"]
             patient_covid.type = self.validated_data["patient_covid_test"]["type"]
             patient_covid.result = self.validated_data["patient_covid_test"]["result"]
