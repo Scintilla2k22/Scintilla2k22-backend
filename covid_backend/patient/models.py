@@ -249,11 +249,11 @@ class Bed(models.Model):
         ('4', ("Floor 4"))
     )
 
-    bed_number = models.IntegerField(null=False, blank=False)
+    bed_number = models.IntegerField(null=True, blank=True)
     bed_id = models.CharField(max_length=266, null=True, blank=True)
-    bed_category = models.CharField(choices=BED_CAT, max_length=30)    
-    floor = models.CharField(choices=FLOOR, max_length=266, blank=True)
-    ward = models.CharField(choices=(("A" , ("Ward A")), ("B", ("Ward B"))), max_length=266, blank=True)
+    bed_category = models.CharField(choices=BED_CAT, max_length=30, blank=True, null=True)    
+    floor = models.CharField(choices=FLOOR, max_length=266, blank=True , null=True)
+    ward = models.CharField(choices=(("A" , ("Ward A")), ("B", ("Ward B"))), max_length=266, blank=True, null=True)
 
     class Meta:
         abstract = True

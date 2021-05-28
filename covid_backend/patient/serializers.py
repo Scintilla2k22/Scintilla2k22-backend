@@ -200,24 +200,26 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
 
     def validate(self, attr):
-        bed_id = "W{0}-F{1}-{2}".format(attr["patient_bed"]["ward"], attr["patient_bed"]["floor"], attr["patient_bed"]["bed_number"])
-
-        qs = PatientBed.objects.filter(bed_id=bed_id)  
-        if qs.exists() and qs.first().bed_status:
-            raise serializers.ValidationError({"bed_number" : ["Bed already alloted"]})
-
-        tbed = BedCount.objects.all()
-        if tbed.count() < 1 :
-            raise serializers.ValidationError({"bed_number" : ["Invalid Bed number"]})
-
-        catg_validate = PatientBed.objects.filter(bed_category=attr["patient_bed"]["bed_category"])
-        bed_count = tbed.first()
         
-        if  attr["patient_bed"]["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
-            attr["patient_bed"]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
-                attr["patient_bed"]["bed_category"]=="3" and catg_validate.count() >= bed_count.icu or \
-                    attr["patient_bed"]["bed_category"]=="4" and catg_validate.count() >= bed_count.ventillator :
-            raise serializers.ValidationError({"bed_category" : ("Beds are full")})
+        if attr["patient_bed"] != {}:
+            bed_id = "W{0}-F{1}-{2}".format(attr["patient_bed"]["ward"], attr["patient_bed"]["floor"], attr["patient_bed"]["bed_number"])
+
+            qs = PatientBed.objects.filter(bed_id=bed_id)  
+            if qs.exists() and qs.first().bed_status:
+                raise serializers.ValidationError({"bed_number" : ["Bed already alloted"]})
+
+            tbed = BedCount.objects.all()
+            if tbed.count() < 1 :
+                raise serializers.ValidationError({"bed_number" : ["Invalid Bed number"]})
+
+            catg_validate = PatientBed.objects.filter(bed_category=attr["patient_bed"]["bed_category"])
+            bed_count = tbed.first()
+            
+            if  attr["patient_bed"]["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
+                attr["patient_bed"]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
+                    attr["patient_bed"]["bed_category"]=="3" and catg_validate.count() >= bed_count.icu or \
+                        attr["patient_bed"]["bed_category"]=="4" and catg_validate.count() >= bed_count.ventillator :
+                raise serializers.ValidationError({"bed_category" : ("Beds are full")})
 
         return attr
 
@@ -247,8 +249,8 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         pre_bed = PatientBed.objects.filter(patient = patient)
         if pre_bed.exists():
             pre_bed.first().delete()
-
-        if len(self.validated_data["patient_bed"]) > 0 :
+      
+        if self.validated_data["patient_bed"] != {}:
             patient_bed = PatientBed(patient = patient)
             bed_history = PatientBedHistory(patient=patient)
             patient_bed.bed_category = bed_history.bed_category = self.validated_data["patient_bed"]["bed_category"]
