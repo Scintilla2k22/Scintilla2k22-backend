@@ -135,11 +135,12 @@ def get_alloted_beds(request, **kwargs):
     total_recovered = PatientProfile.objects.filter(patient_status="R", updated_on__date=datetime.today().date())
     total_migrated = PatientProfile.objects.filter(patient_status="M", updated_on__date=datetime.today().date())
     total_death = PatientProfile.objects.filter(patient_status="D", updated_on__date=datetime.today().date())
-    
+    total_isolated = PatientProfile.objects.filter(patient_status="H", updated_on__date = datetime.today().date())
+
     patient_status = { "recovered" : total_recovered.count() , 
             "migrated" : total_migrated.count(),
             "death" : total_death.count(),
-            
+            "home_isolated" : total_isolated.count()
             }
 
     alloted_beds = { "total" : total_alloted_bed.count() , 

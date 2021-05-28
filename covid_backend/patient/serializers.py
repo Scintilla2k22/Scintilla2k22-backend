@@ -231,6 +231,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
         patient.address = self.validated_data["address"]    
         patient.health_condition = self.validated_data["health_condition"]         
         patient.remark = self.validated_data["remark"]      
+        patient.patient_status = self.validated_data["patient_status"]
         
         if self.validated_data["patient_covid_test"] and self.validated_data["patient_covid_test"]["is_tested"]:
             if self.validated_data["patient_covid_test"]["result"] == "1":
