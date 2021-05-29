@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'import_export',
 ]
 
 
@@ -155,6 +156,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
+
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 LANGUAGE_CODE = 'en-us'
 
