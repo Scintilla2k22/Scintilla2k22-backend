@@ -9,7 +9,7 @@ class PatientHealthUpdateSerializers(serializers.ModelSerializer):
     username = serializers.CharField(write_only=True)
     class Meta:
         model = HealthStatus
-        fields = ("username","patient_condition", "oxy_level","pulse_rate", "blood_pres_systolic", "blood_pres_diastolic",  "temperature", "created_on")
+        fields = ("username","patient_condition", "oxy_level","pulse_rate", "blood_pres_systolic", "blood_pres_diastolic",  "temperature", "created_on", "respiration_rate")
 
     def save(self):            
         patient = get_object_or_404(PatientProfile, patient_id=self.validated_data["username"])
@@ -21,6 +21,7 @@ class PatientHealthUpdateSerializers(serializers.ModelSerializer):
         health_update.blood_pres_diastolic = self.validated_data["blood_pres_diastolic"]
         health_update.temperature = self.validated_data["temperature"]
         health_update.pulse_rate = self.validated_data["pulse_rate"]
+        health_update.respiration_rate = self.validated_data["respiration_rate"]
         health_update.save()
         patient.save()
         

@@ -6,6 +6,7 @@ from django.db.models.signals import pre_delete, post_save, post_delete
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 from django.conf import settings
 User = settings.AUTH_USER_MODEL
 # Create your models here.
@@ -59,7 +60,7 @@ class CustomUser(AbstractUser):
 # User = settings.AUTH_USER_MODEL
 
 class TimeStamped(models.Model):
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=False, auto_now=False, default=timezone.now, blank=True,  null=False)
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:

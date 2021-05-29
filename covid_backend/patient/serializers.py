@@ -47,7 +47,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class PatientBedSerializers(serializers.ModelSerializer):
-    patient_id = serializers.CharField()
+    patient_id = serializers.CharField( )
     # name = serializers.CharField()
     class Meta:
         model = PatientBed
@@ -300,9 +300,33 @@ class PatientStatusSerializer(serializers.Serializer):
         ('D', ("Death")),
         ('H', ("Home Isolated"))
     )
-    model = PatientProfile
-    patient_status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
-
  
-       
+    patient_status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
+    patient_bed = PatientProfileBedSerializers()
+ 
+    def validate(self, attr):
+      
+        if attr["patient_bed"] != {}:
+            bed_id = "W{0}-F{1}-{2}".format(attr["patient_bed"]["ward"], attr["patient_bed"]["floor"], attr["patient_bed"]["bed_number"])
+            qs = PatientBed.objects.filter(bed_id=bed_id)  
+
+            if qs.exists() :
+                raise serializers.ValidationError({"bed_number" : ["Bed already alloted"]})
+
+            tbed = BedCount.objects.all()
+            if tbed.count() < 1 :
+                raise serializers.ValidationError({"bed_number" : ["Invalid Bed number"]})
+         
+            catg_validate = PatientBed.objects.filter(bed_category=attr["patient_bed"]["bed_category"])
+            bed_count = tbed.first()
+            
+            if  attr["patient_bed"]["bed_category"]=="1" and catg_validate.count() >= bed_count.general or \
+                attr["patient_bed"]["bed_category"]=="2" and catg_validate.count() >= bed_count.oxygen or \
+                    attr["patient_bed"]["bed_category"]=="3" and catg_validate.count() >= bed_count.icu or \
+                        attr["patient_bed"]["bed_category"]=="4" and catg_validate.count() >= bed_count.ventillator :
+                raise serializers.ValidationError({"bed_category" : ("Beds are full")})
+
+           
+
+        return attr
  

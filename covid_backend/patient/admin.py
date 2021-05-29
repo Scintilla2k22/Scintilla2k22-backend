@@ -33,11 +33,12 @@ class PatientProfileAdmin(admin.ModelAdmin):
     inlines = [
         PatientBedInline, PatientMigrateInline, PatientCovidTestInline, PatientVaccinationStatusInline
     ]
+ 
     list_display = ('name', 'patient_id', 'contact_number', 'address', 'patient_status')
     list_filter = ( 'patient_status' ,'covid_status' , 'health_condition')
     search_fields = ('name', 'patient_id', 'contact_number', 'address', 'patient_status') 
     readonly_fields = ['patient_id']
-
+    
 
 
 admin.site.register(PatientProfile, PatientProfileAdmin)

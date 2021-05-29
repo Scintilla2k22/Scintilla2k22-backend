@@ -169,6 +169,16 @@ def change_patient_status(request, **kwargs):
     if serializer.is_valid():        
         object.patient_status = serializer.data.get("patient_status")
         object.save()
+        if serializer.data.get("patient_bed") != {}:
+            bed = PatientBed(patient=object)
+            bed_id = "W{0}-F{1}-{2}".format(serializer.data.get("patient_bed")["ward"], serializer.data.get("patient_bed")["floor"], serializer.data.get("patient_bed")["bed_number"])
+            bed.bed_id = bed_id
+            bed.bed_number = serializer.data.get("patient_bed")["bed_number"]
+            bed.bed_category = serializer.data.get("patient_bed")["bed_category"]
+            bed.floor = serializer.data.get("patient_bed")["floor"]
+            bed.ward = serializer.data.get("patient_bed")["ward"]
+            bed.save()
+        
         response = {
             'status': status.HTTP_200_OK,
             'data' : object.get_patient_status_display(),

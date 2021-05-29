@@ -24,11 +24,12 @@ class HealthStatus(TimeStamped):
     blood_pres_systolic = models.IntegerField(blank=False, null=False)
     blood_pres_diastolic = models.IntegerField(blank=False, null=False)
     pulse_rate = models.IntegerField(blank=False, null=False)
+    respiration_rate = models.IntegerField(blank=True, null=True)
     temperature = models.DecimalField(blank=False, null=False, max_digits=8, decimal_places=2)
 
     def __str__(self):
-        return "Patient : {0} | PC : {1} | OL : {2}% | BP : {3}/{4} mm Hg | PR : {5}bpm | T : {2}F |  ".format(self.patient.patient_id,self.get_patient_condition_display(), 
-        self.oxy_level,self.blood_pres_systolic, self.blood_pres_diastolic, self.pulse_rate, self.temperature)
+        return "Patient : {0} | PC : {1} | OL : {2}% | BP : {3}/{4} mm Hg | PR : {5}bpm | T : {6}F | RR : {7} ".format(self.patient.patient_id,self.get_patient_condition_display(), \
+        self.oxy_level, self.blood_pres_systolic, self.blood_pres_diastolic, self.pulse_rate, self.temperature, self.respiration_rate)
 
 
 @receiver(post_save, sender=HealthStatus)
