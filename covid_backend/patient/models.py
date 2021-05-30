@@ -248,12 +248,18 @@ class Bed(models.Model):
         ('3', ("Floor 3")),
         ('4', ("Floor 4"))
     )
+    
+    WARD = ( ("A", ("Ward A")), 
+            ( ("B", ("Ward B"))),
+            (("OG", ("Obs & Gynae Ward"))),
+            (("P", ("Paediatric Ward")))
+    )
 
     bed_number = models.IntegerField(null=True, blank=True)
     bed_id = models.CharField(max_length=266, null=True, blank=True)
     bed_category = models.CharField(choices=BED_CAT, max_length=30, blank=True, null=True)    
     floor = models.CharField(choices=FLOOR, max_length=266, blank=True , null=True)
-    ward = models.CharField(choices=(("A" , ("Ward A")), ("B", ("Ward B"))), max_length=266, blank=True, null=True)
+    ward = models.CharField(choices=WARD, max_length=266, blank=True, null=True)
 
     class Meta:
         abstract = True

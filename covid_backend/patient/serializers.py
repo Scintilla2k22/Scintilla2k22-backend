@@ -180,12 +180,6 @@ class PatientVaccinationSerializers(serializers.ModelSerializer):
         fields = ["is_vaccinated", "vaccine_status"]
 
 class PatientProfileSerializers(serializers.ModelSerializer): 
-    BED_CAT = (
-        ("1", ("General Bed")),
-        ("2", ("Oxygen Bed")),
-        ('3', ("ICU Bed")),
-        ('4', ("Ventillator Bed"))
-    ) 
     patient_id = serializers.CharField(read_only=True, write_only=False)   
     patient_bed = PatientProfileBedSerializers()   
     patient_migrate = PatientMigrateSerializers(read_only=True)
