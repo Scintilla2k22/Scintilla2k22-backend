@@ -24,3 +24,6 @@ urlpatterns = [
     path('api/health/', include('health.urls'))
     #  path('api/health/', include('health.urls')),
 ]
+admin.site.site_header = 'GTR Base Hospital Almora'                    # default: "Django Administration"
+admin.site.index_title = 'Patient Details'                 # default: "Site administration"
+admin.site.site_title = 'GTR Base Hospital Almora'
