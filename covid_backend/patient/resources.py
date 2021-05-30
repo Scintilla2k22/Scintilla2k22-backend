@@ -42,7 +42,8 @@ class Resource(resources.ModelResource):
     )
 
     def dehydrate_test_type(self, obj):
-        return obj.patient_covid_test.get_type_display()
+        if PatientCovidTest.objects.filter(patient=obj).count():
+            return obj.patient_covid_test.get_type_display()
 
 
     
