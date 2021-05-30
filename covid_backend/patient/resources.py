@@ -26,10 +26,10 @@ class Resource(resources.ModelResource):
         return obj.get_health_condition_display()
 
     
-    created_on = fields.Field(
-        column_name = "Admitted On",
-        attribute = 'created_on'
-    )
+    # admitted_on = fields.Field(
+    #     column_name = "Admitted On",
+    #     attribute = 'admitted_on'
+    # )
 
     # Patient Covid Test record
     is_tested = fields.Field(
@@ -69,7 +69,9 @@ class Resource(resources.ModelResource):
 
     class Meta:
         model = PatientProfile
-        fields = ['name', 'patient_id', 'contact_number', 'created_on', 'age', 'gender',  'health_condition', 'address', 'patient_status',   'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'remark']
+        
+        fields = ['name', 'patient_id', 'contact_number', 'admitted_on', 'age', 'gender','address', 'health_condition', 'patient_status',   'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'remark']
+        import_id_fields = ["name", 'contact_number', 'admitted_on', 'age', 'gender', 'address']
         abstract = True
 
 
@@ -84,7 +86,7 @@ class PatientProfileResource(Resource):
     class Meta:
         model = PatientProfile
         fields = Resource.Meta.fields + ["bed_id"]
-        export_order = ('name', 'patient_id', 'contact_number', 'created_on', 'age', 'gender',  'health_condition', 'address', 'patient_status', 'bed_id', \
+        export_order = ('name', 'patient_id', 'contact_number', 'admitted_on', 'age', 'gender',  'health_condition', 'address', 'patient_status', 'bed_id', \
             'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'remark' )
 
 

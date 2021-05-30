@@ -87,13 +87,14 @@ class PatientProfile(TimeStamped):
     patient_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=True, blank=True)
     age  = models.IntegerField(null=True, blank=True)
+    admitted_on = models.DateField(auto_now_add=False, auto_now=False, default=timezone.now)
     contact_number = models.CharField(max_length=255, blank=True, null=True)
     address = models.TextField(null=True, blank=True)
     patient_status = models.CharField(choices=PATIENT_STATUS, max_length=40, default="A")
     covid_status = models.CharField(choices=COVID_STATUS, max_length=40, default="P")
     remark = models.TextField(blank=True, null=True, default=" ")
     covid_facility = models.TextField(blank=True, null=True, default="G.T.R Base Hospital, Almora")
-    health_condition = models.CharField(choices=PATIENT_CONDITION, max_length=30, null=False)
+    health_condition = models.CharField(choices=PATIENT_CONDITION, max_length=30, null=True, blank=True)
 
 
     objects = PatientManager()
@@ -248,7 +249,7 @@ class Bed(models.Model):
         ('3', ("Floor 3")),
         ('4', ("Floor 4"))
     )
-    
+
     WARD = ( ("A", ("Ward A")), 
             ( ("B", ("Ward B"))),
             (("OG", ("Obs & Gynae Ward"))),

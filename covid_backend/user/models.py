@@ -60,7 +60,7 @@ class CustomUser(AbstractUser):
 # User = settings.AUTH_USER_MODEL
 
 class TimeStamped(models.Model):
-    created_on = models.DateTimeField(auto_now_add=False, auto_now=False, default=timezone.now, blank=True,  null=False)
+    created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:

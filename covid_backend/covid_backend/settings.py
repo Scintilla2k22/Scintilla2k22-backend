@@ -80,7 +80,7 @@ ROOT_URLCONF = 'covid_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ os.path.join(BASE_DIR, 'static/templates'), os.path.join(BASE_DIR, 'patient/template') ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

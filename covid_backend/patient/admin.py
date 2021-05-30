@@ -36,31 +36,39 @@ class PatientCovidTestInline(admin.TabularInline):
     model = PatientCovidTest
 
 
-class PatientProfilePastDataFilter(admin.SimpleListFilter):
-    title = _('Past Data')
-    parameter_name = 'patient'
+
+
+
+class InputFilter(admin.SimpleListFilter):
+    template = 'patient/input_filter.html'
 
     def lookups(self, request, model_admin):
+        # Dummy, required to show the filter.
+        return ((),)
 
-        # print(request.GET["patient"])
-    
-        return (
-            
-            ('week' , _('Last Week')),
-            ('month', _("Last Month - 28days")),
-
+    def choices(self, changelist):
+        # Grab only the "all" option.
+        all_choice = next(super().choices(changelist))
+        all_choice['query_parts'] = (
+            (k, v)
+            for k, v in changelist.get_filters_params().items()
+            if k != self.parameter_name
         )
+        yield all_choice
 
-    # def queryset(self, request, queryset):
-    #     if self.value() == "week":
-    #         return queryset.objects.filter().all()[:7]
-    #     elif self.value() == "month":
-    #         return queryset.objects.filter().all()[:28]
+class PatientProfilePastDataFilter(InputFilter):
+    parameter_name = 'patient'
+    title = _('Past Record')
 
-     
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            uid = self.value()
 
-
-
+            return queryset.filter(
+                Q(uid=uid) |
+                Q(payment__uid=uid) |
+                Q(user__uid=uid)
+            )
 
 
 class PatientProfileCustomFilter(admin.SimpleListFilter):
@@ -85,17 +93,17 @@ class PatientProfileCustomFilter(admin.SimpleListFilter):
          
 
         if self.value() == "M":
-            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'patient_status','is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_migrate_to', 'patient_migrate_on', 'patient_migration_reason')
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status','is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_migrate_to', 'patient_migrate_on', 'patient_migration_reason')
             PatientProfileAdmin.resource_class = PatientProfileMigrateResource
         elif self.value() == "D":
-            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'patient_status', 'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_expired_on', 'patient_death_cause')
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status', 'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_expired_on', 'patient_death_cause')
             PatientProfileAdmin.resource_class = PatientProfileDeathResource
          
         elif self.value() == "R" or self.value() == "H":
-            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'patient_status' ,'is_tested','test_type', 'is_vaccinated', 'vaccine_status')
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on',  'patient_status' ,'is_tested','test_type', 'is_vaccinated', 'vaccine_status')
             PatientProfileAdmin.resource_class = PatientProfileIsolate
         else:
-            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
             PatientProfileAdmin.resource_class = PatientProfileResource
 
         patient_categ = ['A','M', 'D', 'R', 'H' ]
@@ -112,8 +120,8 @@ class PatientProfileAdmin(ImportExportModelAdmin):
     # list_display = LIST_DISPLAY
     
     resource_class = PatientProfileResource
-    list_filter = ( 'covid_status' , 'health_condition', PatientProfileCustomFilter)
-    list_display = ('name', 'patient_id', 'contact_number', 'address', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
+    list_filter = ( 'covid_status' , 'health_condition',PatientProfilePastDataFilter, PatientProfileCustomFilter)
+    list_display = ('name', 'patient_id', 'contact_number', 'address','admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
     search_fields = ('name', 'patient_id', 'contact_number', 'address', 'patient_status') 
     readonly_fields = ['patient_id']
 
