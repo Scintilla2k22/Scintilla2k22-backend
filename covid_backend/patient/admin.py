@@ -43,7 +43,7 @@ class InputFilter(admin.SimpleListFilter):
     template = 'patient/input_filter.html'
 
     def lookups(self, request, model_admin):
-        # Dummy, required to show the filter.
+        
         return ((),)
 
     def choices(self, changelist):

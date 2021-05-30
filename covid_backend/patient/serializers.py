@@ -189,7 +189,7 @@ class PatientProfileSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'created_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed',  'patient_migrate','patient_death',  'covid_status', 'remark', 'patient_covid_test', 'patient_vaccine_status'] 
+        fields = ['id', 'patient_id', 'admitted_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed',  'patient_migrate','patient_death',  'covid_status', 'remark', 'patient_covid_test', 'patient_vaccine_status'] 
         # fields = "__all__"
         # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
 
