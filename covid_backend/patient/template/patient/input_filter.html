@@ -5,26 +5,74 @@
 <ul>
     <li>
         {% with choices.0 as all_choice %}
-        <form method="GET" action="">      
+        <!-- <form method="GET" action="" id ="text-filter-form" >       -->
 
-            {% for k, v in all_choice.query_parts %}
+            <!-- {% for k, v in all_choice.query_parts %}
             <input type="hidden" name="{{ k }}" value="{{ v }}" />
-            {% endfor %}
+            {% endfor %} -->
 
-            <input  type="date"
+            <!-- <input  type="date"
                     value="{{ spec.value|default_if_none:'' }}"
-                    name="{{ spec.parameter_name }}" />
+                    name="{{ spec.parameter_name }}" /> -->
+            <!-- <input type="date" id ="from" name="from" />        -->
+            <!-- <input  type="date" id="to"  name="to" /> -->
+            <!-- <a href="?from=from" title="from the shit to dick">from the shit to dick</a> -->
+            <!-- <button type="submit" id="date-btn" class="btn btn-secondary p-1 m-0 "  >filter</button> -->
+            
+            <link href="/media/css/ui-lightness/jquery-ui-1.8.19.custom.css" rel="stylesheet" type="text/css"/>
+        <script src="/media/js/jquery/jquery-min.js"></script>
+        <script src="/media/js/jquery/jquery-ui-1.8.19.custom.min.js"></script>
 
-            <input  type="date"  name="to" />
+        <script>
 
-            <button type="submit" class="btn btn-secondary p-1 m-0 "  >filter</button>
-            {% if not all_choice.selected %}
-                <strong><a href="{{ all_choice.query_string }}">x {% trans 'Remove' %}</a></strong>
-            {% endif %}
+            $(function() {
+                $( "#admitted_on_gte" ).datepicker({ dateFormat: 'yy-mm-dd'{% if admitted_on_gte %}, defaultDate: '{{ admitted_on_gte }}'{% endif %} }); 
+                $( "#admitted_on_lte" ).datepicker({ dateFormat: 'yy-mm-dd'{% if admitted_on_lte %}, defaultDate: '{{ admitted_on_lte }}'{% endif %} });
+            });
 
-        </form>
+        function applyDateFilters() {
+
+            qs = location.search;
+
+            if (qs.charAt(0) == '?') qs = qs.substring(1);
+
+            var qsComponents = qs.split(/[&;]/g);
+
+            new_qs = [];
+            for (var index = 0; index < qsComponents.length; index ++){
+
+                var keyValuePair = qsComponents[index].split('=');
+                var key          = keyValuePair[0];
+                var value        = keyValuePair[1];
+
+                if(key == 'admitted_on__gte' || key == 'admitted_on__lte' || key == '') {
+                    continue;
+                } else {
+                    new_qs[index] = key + '=' + value;
+                }
+            }
+
+            if($( "#admitted_on_gte" ).val() != '') {
+                new_qs[new_qs.length] = 'admitted_on__gte=' + $( "#admitted_on_gte" ).val();
+            }
+            if($( "#admitted_on_lte" ).val() != '') {
+                new_qs[new_qs.length] = 'admitted_on__lte=' + $( "#admitted_on_lte" ).val();
+            }
+
+            window.location = '?' + new_qs.join("&");
+        }
+        </script>
+
+        <p>
+        From: <br /><input type="date" id="admitted_on_gte" value="{{ admitted_on_gte|default:'' }}" size="10"><br />
+        To: <br /><input type="date" id="admitted_on_lte" value="{{ admitted_on_lte|default:'' }}" size="10">
+        </p>
+
+        <ul>
+            <li><a href="#" onclick="javascript:applyDateFilters();">Apply date filters</a></li>
+        </ul>    
         {% endwith %}
     </li>
 </ul>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>

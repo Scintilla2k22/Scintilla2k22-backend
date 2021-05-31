@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from .resources import *
 from django.utils import timezone
-from django.db.models import Q
+from django.shortcuts import render, redirect
 # Register your models here.
 
 
@@ -58,7 +58,7 @@ class PatientCovidTestInline(admin.TabularInline):
 #         )
 #         yield all_choice
 
-from_ = to_ = timezone.now
+# from_ = to_ = timezone.now
 class PatientProfilePastDataFilter(admin.SimpleListFilter):
     parameter_name = 'from'
     # parameter_name_2 = 'to'
@@ -67,16 +67,17 @@ class PatientProfilePastDataFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
     # Dummy, required to show the filter.
-        return (("from", ("from to") ),)
+        return (("from", (" from date : ")),)
 
     def queryset(self, request, queryset):
         global from_, to_
-        print(self.value(), request.GET.get("to", False))
+        # print(self.value(), request.GET.get("to", False))
         if self.value() is not None:
             from_ = request.GET.get("from")
             to_ = request.GET.get("to")
-            print("hello", request.GET.get("from", False))
-            return queryset.filter( Q(admitted_on__iexact = from_ ))
+            # print("hello", request.GET.get("from", False))
+            return queryset.filter(admitted_on__gte=request.GET.get("from"))
+        
 
 
 class PatientProfileCustomFilter(admin.SimpleListFilter):
@@ -129,7 +130,7 @@ class PatientProfileAdmin(ImportExportModelAdmin):
     # list_display = LIST_DISPLAY
     
     resource_class = PatientProfileResource
-    list_filter = ( 'covid_status' , 'health_condition', PatientProfileCustomFilter ,PatientProfilePastDataFilter )
+    list_filter = ( 'covid_status' , 'health_condition', PatientProfileCustomFilter, PatientProfilePastDataFilter )
     list_display = ('name', 'patient_id', 'contact_number', 'address','admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
     search_fields = ('name', 'patient_id', 'contact_number', 'address', 'patient_status') 
     readonly_fields = ['patient_id']
