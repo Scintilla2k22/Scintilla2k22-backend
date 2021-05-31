@@ -212,8 +212,9 @@ def create_patient_id(sender, instance=None, created=False, **kwargs):
     #         migrate.save()   
 
     if instance.patient_status != 'A':
+      
         bed = PatientBed.objects.filter(patient=instance)
-        if bed.exists():
+        if bed.exists():           
             bed.first().delete()
 
 

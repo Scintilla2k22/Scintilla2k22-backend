@@ -321,8 +321,8 @@ class PatientStatusSerializer(serializers.Serializer):
                     attr["patient_bed"]["bed_category"]=="3" and catg_validate.count() >= bed_count.icu or \
                         attr["patient_bed"]["bed_category"]=="4" and catg_validate.count() >= bed_count.ventillator :
                 raise serializers.ValidationError({"bed_category" : ("Beds are full")})
-
-           
+          
 
         return attr
- 
+    
+    
