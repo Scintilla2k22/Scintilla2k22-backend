@@ -5,19 +5,17 @@
 <ul>
     <li>
         {% with choices.0 as all_choice %}
-        <form method="GET" action="">
+        <form method="GET" action="">      
 
-            <!-- {% for k, v in all_choice.query_parts %}
+            {% for k, v in all_choice.query_parts %}
             <input type="hidden" name="{{ k }}" value="{{ v }}" />
-            {% endfor %} -->
+            {% endfor %}
 
             <input  type="date"
                     value="{{ spec.value|default_if_none:'' }}"
-                    name="from"/>
+                    name="{{ spec.parameter_name }}" />
 
-            <input  type="date"
-            value="{{ spec.value|default_if_none:'' }}"
-            name="to"/>
+            <input  type="date"  name="to" />
 
             <button type="submit" class="btn btn-secondary p-1 m-0 "  >filter</button>
             {% if not all_choice.selected %}
