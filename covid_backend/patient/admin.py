@@ -4,6 +4,7 @@ from .models import *
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from .resources import *
+from django.utils import timezone
 # Register your models here.
 
 
@@ -39,36 +40,40 @@ class PatientCovidTestInline(admin.TabularInline):
 
 
 
-class InputFilter(admin.SimpleListFilter):
-    template = 'patient/input_filter.html'
+# class InputFilter(admin.SimpleListFilter):
+#     template = 'patient/input_filter.html'
 
-    def lookups(self, request, model_admin):
-        
-        return ((),)
+#     def lookups(self, request, model_admin):
+#         # Dummy, required to show the filter.
+#         return ((),)
 
-    def choices(self, changelist):
-        # Grab only the "all" option.
-        all_choice = next(super().choices(changelist))
-        all_choice['query_parts'] = (
-            (k, v)
-            for k, v in changelist.get_filters_params().items()
-            if k != self.parameter_name
-        )
-        yield all_choice
+    # def choices(self, changelist):
+    #     # Grab only the "all" option.
+    #     all_choice = next(super().choices(changelist))
+    #     all_choice['query_parts'] = (
+    #         (k, v)
+    #         for k, v in changelist.get_filters_params().items()
+    #         if k != self.parameter_name
+    #     )
+    #     yield all_choice
 
-class PatientProfilePastDataFilter(InputFilter):
-    parameter_name = 'patient'
-    title = _('Past Record')
+# class PatientProfilePastDataFilter(InputFilter):
+#     parameter_name = 'patient'
+#     title = _('Past Record')
 
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            uid = self.value()
+#     def lookups(self, request, model_admin):
+#         return (
+#             (),
+#             # ("from", ("from date")),
+#             # ("to", ("to date")),
+#         )
 
-            return queryset.filter(
-                Q(uid=uid) |
-                Q(payment__uid=uid) |
-                Q(user__uid=uid)
-            )
+#     def queryset(self, request, queryset):
+#         print(request.GET,   request.GET.get('from', None), request.GET.get("to", None),  "this is date")
+#         # print(request.GET.get("patient"))
+#         # if request.GET["patient"] != [] :
+#             # print(self.value(), "this is content ")
+#         return queryset.filter(admitted_on__lte = request.GET.get("from") if request.GET.get("from") is not None else timezone.now() , admitted_on__gte = request.GET.get("to") if request.GET.get("to") is not None else timezone.now() )
 
 
 class PatientProfileCustomFilter(admin.SimpleListFilter):
@@ -120,7 +125,7 @@ class PatientProfileAdmin(ImportExportModelAdmin):
     # list_display = LIST_DISPLAY
     
     resource_class = PatientProfileResource
-    list_filter = ( 'covid_status' , 'health_condition',PatientProfilePastDataFilter, PatientProfileCustomFilter)
+    list_filter = ( 'covid_status' , 'health_condition', PatientProfileCustomFilter)
     list_display = ('name', 'patient_id', 'contact_number', 'address','admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
     search_fields = ('name', 'patient_id', 'contact_number', 'address', 'patient_status') 
     readonly_fields = ['patient_id']

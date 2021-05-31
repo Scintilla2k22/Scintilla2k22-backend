@@ -299,7 +299,9 @@ class PatientStatusSerializer(serializers.Serializer):
     patient_bed = PatientProfileBedSerializers()
  
     def validate(self, attr):
-      
+        if attr["patient_status"] == 'A' and (attr["patient_bed"] == {} or attr["patient_bed"] == None):
+            raise serializers.ValidationError({"patient_bed" : ("Invalid Entry, please fill bed details")})
+            
         if attr["patient_bed"] != {}:
             bed_id = "W{0}-F{1}-{2}".format(attr["patient_bed"]["ward"], attr["patient_bed"]["floor"], attr["patient_bed"]["bed_number"])
             qs = PatientBed.objects.filter(bed_id=bed_id)  

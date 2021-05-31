@@ -147,13 +147,15 @@ def get_alloted_beds(request, **kwargs):
             "general" : general_bed.count(),
             "oxygen" : oxy_bed.count(),
             "icu" : icu_bed.count(),
-            "ventillator" : ventillator_bed.count()}
+            "ventillator" : ventillator_bed.count()
+            }
+            
     total_beds = {
         "total" : total_bed,
         "general" : total_gen,
         "oxygen" : total_oxy,
         "icu" : total_icu,
-        "ventillator" : total_venti    }
+        "ventillator" : total_venti  }
 
     data = {"data": serializers.data, "alloted_beds": alloted_beds, "total_beds": total_beds, "patient_status": patient_status, "status": status.HTTP_200_OK}
 
@@ -188,6 +190,7 @@ def change_patient_status(request, **kwargs):
         return Response(response)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 """"
   Patient Migrations to another Covid facility
