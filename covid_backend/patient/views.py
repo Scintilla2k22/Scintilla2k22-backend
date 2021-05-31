@@ -170,11 +170,9 @@ def change_patient_status(request, **kwargs):
 
     if serializer.is_valid():        
         object.patient_status = serializer.data.get("patient_status")
-        object.save()
-        # print(object.get_patient_status_display())
+        object.save()         
 
-      
-        if serializer.data.get("patient_status") == "A" and  serializer.data.get("patient_bed") != None and serializer.data.get("patient_bed") !={} and serializer.data.get("patient_bed"):
+        if serializer.data.get("patient_status") == "A" and request.data["patient_bed"] !={} and  serializer.data.get("patient_bed")["bed_number"] != None :
             bed = PatientBed(patient=object)
             bed_id = "W{0}-F{1}-{2}".format(serializer.data.get("patient_bed")["ward"], serializer.data.get("patient_bed")["floor"], serializer.data.get("patient_bed")["bed_number"])
             bed.bed_id = bed_id

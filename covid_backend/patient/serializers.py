@@ -298,7 +298,7 @@ class PatientStatusSerializer(serializers.Serializer):
     patient_status = serializers.ChoiceField(choices=PATIENT_STATUS, required=True)
     patient_bed = PatientProfileBedSerializers()
  
-    def validate(self, attr):
+    def validate(self, attr):       
         if attr["patient_status"] == 'A' and (attr["patient_bed"] == {} or attr["patient_bed"] == None):
             raise serializers.ValidationError({"patient_bed" : ("Invalid Entry, please fill bed details")})
             
