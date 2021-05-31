@@ -26,5 +26,5 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(MedicalStaffProfile)
-admin.site.register(StaffCategory)
-admin.site.register(CustomUser, CustomUserAdmin)
+# admin.site.register(StaffCategory)
+# admin.site.register(CustomUser, CustomUserAdmin)

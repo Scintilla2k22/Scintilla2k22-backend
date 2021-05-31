@@ -5,11 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from .resources import *
 from django.utils import timezone
-from django.shortcuts import render, redirect
 # Register your models here.
 
 
-admin.ModelAdmin
+
 
 """
 
@@ -48,36 +47,33 @@ class PatientCovidTestInline(admin.TabularInline):
 #         # Dummy, required to show the filter.
 #         return ((),)
 
-#     def choices(self, changelist):
-#         # Grab only the "all" option.
-#         all_choice = next(super().choices(changelist))
-#         all_choice['query_parts'] = (
-#             (k, v)
-#             for k, v in changelist.get_filters_params().items()
-#             if k != self.parameter_name
+    # def choices(self, changelist):
+    #     # Grab only the "all" option.
+    #     all_choice = next(super().choices(changelist))
+    #     all_choice['query_parts'] = (
+    #         (k, v)
+    #         for k, v in changelist.get_filters_params().items()
+    #         if k != self.parameter_name
+    #     )
+    #     yield all_choice
+
+# class PatientProfilePastDataFilter(InputFilter):
+#     parameter_name = 'patient'
+#     title = _('Past Record')
+
+#     def lookups(self, request, model_admin):
+#         return (
+#             (),
+#             # ("from", ("from date")),
+#             # ("to", ("to date")),
 #         )
-#         yield all_choice
 
-# from_ = to_ = timezone.now
-class PatientProfilePastDataFilter(admin.SimpleListFilter):
-    parameter_name = 'from'
-    # parameter_name_2 = 'to'
-    title = _('Past Record')
-    template = 'patient/input_filter.html'
-
-    def lookups(self, request, model_admin):
-    # Dummy, required to show the filter.
-        return (("from", (" from date : ")),)
-
-    def queryset(self, request, queryset):
-        global from_, to_
-        # print(self.value(), request.GET.get("to", False))
-        if self.value() is not None:
-            from_ = request.GET.get("from")
-            to_ = request.GET.get("to")
-            # print("hello", request.GET.get("from", False))
-            return queryset.filter(admitted_on__gte=request.GET.get("from"))
-        
+#     def queryset(self, request, queryset):
+#         print(request.GET,   request.GET.get('from', None), request.GET.get("to", None),  "this is date")
+#         # print(request.GET.get("patient"))
+#         # if request.GET["patient"] != [] :
+#             # print(self.value(), "this is content ")
+#         return queryset.filter(admitted_on__lte = request.GET.get("from") if request.GET.get("from") is not None else timezone.now() , admitted_on__gte = request.GET.get("to") if request.GET.get("to") is not None else timezone.now() )
 
 
 class PatientProfileCustomFilter(admin.SimpleListFilter):
@@ -87,7 +83,7 @@ class PatientProfileCustomFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         PatientProfileAdmin.list_display  = ('name', 'patient_id', 'contact_number', 'address', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
 
-        
+        # print(request.GET["patient"])
     
         return (
             ("A", _('ACTIVE')),
@@ -99,26 +95,25 @@ class PatientProfileCustomFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-    
-        if self.value() is not None:
+         
 
-            if self.value() == "M":
-                PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status','is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_migrate_to', 'patient_migrate_on', 'patient_migration_reason')
-                PatientProfileAdmin.resource_class = PatientProfileMigrateResource
-            elif self.value() == "D":
-                PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status', 'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_expired_on', 'patient_death_cause')
-                PatientProfileAdmin.resource_class = PatientProfileDeathResource
-            
-            elif self.value() == "R" or self.value() == "H":
-                PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on',  'patient_status' ,'is_tested','test_type', 'is_vaccinated', 'vaccine_status')
-                PatientProfileAdmin.resource_class = PatientProfileIsolate
-            else:
-                PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
-                PatientProfileAdmin.resource_class = PatientProfileResource
+        if self.value() == "M":
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status','is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_migrate_to', 'patient_migrate_on', 'patient_migration_reason')
+            PatientProfileAdmin.resource_class = PatientProfileMigrateResource
+        elif self.value() == "D":
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status', 'is_tested','test_type', 'is_vaccinated', 'vaccine_status', 'patient_expired_on', 'patient_death_cause')
+            PatientProfileAdmin.resource_class = PatientProfileDeathResource
+         
+        elif self.value() == "R" or self.value() == "H":
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on',  'patient_status' ,'is_tested','test_type', 'is_vaccinated', 'vaccine_status')
+            PatientProfileAdmin.resource_class = PatientProfileIsolate
+        else:
+            PatientProfileAdmin.list_display = ('name', 'patient_id', 'contact_number', 'address', 'admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
+            PatientProfileAdmin.resource_class = PatientProfileResource
 
-            patient_categ = ['A','M', 'D', 'R', 'H' ]
-            if self.value() in patient_categ:
-                return queryset.filter(patient_status__iexact=self.value())
+        patient_categ = ['A','M', 'D', 'R', 'H' ]
+        if self.value() in patient_categ:
+            return queryset.filter(patient_status__iexact=self.value())
 
 
 
@@ -130,7 +125,7 @@ class PatientProfileAdmin(ImportExportModelAdmin):
     # list_display = LIST_DISPLAY
     
     resource_class = PatientProfileResource
-    list_filter = ( 'covid_status' , 'health_condition', PatientProfileCustomFilter, PatientProfilePastDataFilter )
+    list_filter = ( 'covid_status' , 'health_condition', PatientProfileCustomFilter)
     list_display = ('name', 'patient_id', 'contact_number', 'address','admitted_on', 'patient_status', 'patient_bed_id','is_tested','test_type', 'is_vaccinated', 'vaccine_status')
     search_fields = ('name', 'patient_id', 'contact_number', 'address', 'patient_status') 
     readonly_fields = ['patient_id']
@@ -174,15 +169,20 @@ class PatientProfileAdmin(ImportExportModelAdmin):
             if vaccine:
                 return "{0} ( {1})".format( vaccine.get_type_display(), vaccine.vaccinated_on)
         return "NA"
+    
+    def has_add_permission(self, request): 
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
 
     # def patient_migrate
 
 admin.site.register(PatientProfile, PatientProfileAdmin)
-admin.site.register(PatientBedHistory)
-admin.site.register(PatientBed)
+# admin.site.register(PatientBedHistory)
+# admin.site.register(PatientBed)
 admin.site.register(BedCount)
-admin.site.register(PatientMigrate)
-admin.site.register(PatientCovidTest)
-admin.site.register(PatientVaccinationStatus , PatientVaccinationStatusAdmin)
-admin.site.register(Vaccine)
-admin.site.register(PatientDeath)
+# admin.site.register(PatientMigrate)
+# admin.site.register(PatientCovidTest)
+# admin.site.register(PatientVaccinationStatus , PatientVaccinationStatusAdmin)
+# admin.site.register(Vaccine)
+# admin.site.register(PatientDeath)
