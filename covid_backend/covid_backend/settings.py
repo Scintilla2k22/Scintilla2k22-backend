@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'import_export',
-    'django_admin_search',
+    
 ]
 
 
