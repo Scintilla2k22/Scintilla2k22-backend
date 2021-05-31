@@ -5,11 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from .resources import *
 from django.utils import timezone
-from django.shortcuts import render, redirect
 # Register your models here.
 
-
-admin.ModelAdmin
 
 """
 
@@ -58,7 +55,6 @@ class PatientCovidTestInline(admin.TabularInline):
 #         )
 #         yield all_choice
 
-# from_ = to_ = timezone.now
 class PatientProfilePastDataFilter(admin.SimpleListFilter):
     parameter_name = 'from'
     # parameter_name_2 = 'to'
