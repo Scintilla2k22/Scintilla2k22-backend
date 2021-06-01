@@ -170,15 +170,20 @@ class PatientProfileAdmin(ImportExportModelAdmin):
             if vaccine:
                 return "{0} ( {1})".format( vaccine.get_type_display(), vaccine.vaccinated_on)
         return "NA"
+    
+    def has_add_permission(self, request): 
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
 
     # def patient_migrate
 
 admin.site.register(PatientProfile, PatientProfileAdmin)
-admin.site.register(PatientBedHistory)
-admin.site.register(PatientBed)
+# admin.site.register(PatientBedHistory)
+# admin.site.register(PatientBed)
 admin.site.register(BedCount)
-admin.site.register(PatientMigrate)
-admin.site.register(PatientCovidTest)
+# admin.site.register(PatientMigrate)
+# admin.site.register(PatientCovidTest)
 admin.site.register(PatientVaccinationStatus , PatientVaccinationStatusAdmin)
-admin.site.register(Vaccine)
-admin.site.register(PatientDeath)
+# admin.site.register(Vaccine)
+# admin.site.register(PatientDeath)
