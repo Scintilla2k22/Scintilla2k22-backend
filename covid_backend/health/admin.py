@@ -3,6 +3,7 @@ from .models import *
 import django.contrib.auth.admin
 import django.contrib.auth.models
 from django.contrib import auth
+
 @admin.register(HealthStatus)
 class HealthStatusCustom(admin.ModelAdmin):
     search_fields = ('patient','patient_condition')
