@@ -23,10 +23,14 @@ URL = ""
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!)m%4b=l59e)it75&73@a*lty0$n8v(1(ej!=ve5xei6xhlw(4'
-
+with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
+    SECRET_KEY = f.read().strip()
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if URL:
+    DEBUG = False
+else:
+    
+    DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -150,6 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'user.CustomUser'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
 # CORS_ALLOWED_ORIGINS = [
 #     'http://localhost:3000',
 #     'https://ukcovid19.in',
@@ -176,5 +181,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+STATIC_ROOT = os.path.join(BASE_DIR,'static/')
 # STATICFILES_DIRS = [os.path.join(BASE_DIR ,'static') ]
+
+# HTTPS settings
+if URL:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+else:
+    pass
+
+# HSTS (HTTPS STRICT TRANSPORT SECURITY)
+if URL:
+    SECURE_HSTS_SECONDS = 31536000 #1 year
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+else:
+    pass

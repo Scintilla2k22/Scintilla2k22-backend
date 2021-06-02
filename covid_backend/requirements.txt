@@ -30,7 +30,6 @@ kombu==5.0.2
 lockfile==0.12.2
 MarkupPy==1.14
 msgpack==0.6.2
-mysqlclient==2.0.3
 odfpy==1.4.1
 openpyxl==3.0.7
 packaging==20.3
