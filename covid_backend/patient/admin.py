@@ -25,7 +25,7 @@ class PatientVaccinationStatusAdmin(admin.ModelAdmin):
     model = PatientVaccinationStatus
     inlines = [VaccineInline ]
 
-class PatientVaccinationStatusInline(admin.StackedInline):
+class PatientVaccinationStatusInline(admin.TabularInline):
     model = PatientVaccinationStatus
 
 class PatientMigrateInline(admin.StackedInline):
@@ -123,7 +123,7 @@ class PatientProfileCustomFilter(admin.SimpleListFilter):
 
 class PatientProfileAdmin(ImportExportModelAdmin):
     inlines = [
-        PatientBedInline, PatientMigrateInline,PatientDeathInline, PatientCovidTestInline, PatientVaccinationStatusInline
+        PatientBedInline,  PatientCovidTestInline, PatientVaccinationStatusInline, VaccineInline, PatientMigrateInline,PatientDeathInline
     ]
     global LIST_DISPLAY
     # list_display = LIST_DISPLAY
@@ -187,6 +187,6 @@ admin.site.register(PatientBedHistory)
 admin.site.register(BedCount)
 # admin.site.register(PatientMigrate)
 # admin.site.register(PatientCovidTest)
-admin.site.register(PatientVaccinationStatus , PatientVaccinationStatusAdmin)
+# admin.site.register(PatientVaccinationStatus , PatientVaccinationStatusAdmin)
 # admin.site.register(Vaccine)
 # admin.site.register(PatientDeath)
