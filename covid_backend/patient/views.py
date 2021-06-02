@@ -10,6 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from.models import *
 from django.utils.timezone import datetime
+from .paginations import *
 User = settings.AUTH_USER_MODEL
 
 
@@ -57,7 +58,11 @@ class PatientProfileView(APIView):
 
 
  
-
+class PatientsList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated,]
+    queryset = PatientProfile.objects.all().filter(patient_status='A')
+    serializer_class = PatientProfileSerializers
+    pagination_class = PatientListPagination
 
 
 @permission_classes([IsAuthenticated])
