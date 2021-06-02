@@ -122,7 +122,7 @@ class Vaccine(TimeStamped):
     type = models.CharField(choices=VACCINE_TYPE,blank=True,  max_length=266)
     vaccinated_on = models.DateField(auto_now=False,blank=True, auto_now_add=False)
     patient_vaccine = models.ForeignKey(PatientVaccinationStatus, related_name="vaccine_status", on_delete=models.CASCADE, null=True)
-
+    patient = models.ForeignKey(PatientProfile, related_name="patient_vaccine", on_delete=models.CASCADE, null=True)
     def __str__(self):
         return "{0} :  {1} | {2}".format(self.patient_vaccine.patient.patient_id, self.get_type_display(), self.vaccinated_on)
 
