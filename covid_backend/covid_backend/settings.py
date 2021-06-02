@@ -16,7 +16,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 URL = ""
-# URL = "covid.c9uma936bctg.us-east-2.rds.amazonaws.com"
+# URL = "covid.c70gwuxntbzd.ap-south-1.rds.amazonaws.com"
 
 
 # Quick-start development settings - unsuitable for production
