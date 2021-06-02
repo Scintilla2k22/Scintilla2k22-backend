@@ -15,11 +15,9 @@ class PatientListPagination(PageNumberPagination):
         # total_page = len(data)//self.page_size + 1 if len(data)%self.page_size else 0
         return Response({
 
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link()
-            },
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
             'count': self.page.paginator.count,
-            'total' : self.total,
+            'total_pages' : self.total,
             'results': data
         })
