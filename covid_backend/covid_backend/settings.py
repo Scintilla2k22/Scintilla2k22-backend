@@ -184,18 +184,18 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'static/')
 # STATICFILES_DIRS = [os.path.join(BASE_DIR ,'static') ]
 
-# HTTPS settings
-if URL:
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
-else:
-    pass
+# # HTTPS settings
+# if URL:
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SECURE_SSL_REDIRECT = True
+# else:
+#     pass
 
-# HSTS (HTTPS STRICT TRANSPORT SECURITY)
-if URL:
-    SECURE_HSTS_SECONDS = 31536000 #1 year
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-else:
-    pass
+# # HSTS (HTTPS STRICT TRANSPORT SECURITY)
+# if URL:
+#     SECURE_HSTS_SECONDS = 31536000 #1 year
+#     SECURE_HSTS_PRELOAD = True
+#     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# else:
+#     pass
