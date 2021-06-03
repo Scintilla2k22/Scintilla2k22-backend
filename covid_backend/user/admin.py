@@ -9,7 +9,7 @@ from rest_framework.authtoken.admin import *
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    add_form = CustomUserCreationForm
+    add_form = CustomUserCreationForm   
     fieldsets = (
 
         *UserAdmin.fieldsets, (
@@ -25,9 +25,17 @@ class CustomUserAdmin(UserAdmin):
         )
     )
 
+class MedicalStaffProfileAdmin(admin.ModelAdmin):
+    model = MedicalStaffProfile
+    list_display = ['user',  'staff_category',  'gender', 'contact_number', 'address']
 
-admin.site.register(MedicalStaffProfile)
+    # def category(self, obj):
+    #     return obj.staff_category.get_title_display() if obj.staff_category.get_title_display() else 'None' 
+
+
+
+admin.site.register(MedicalStaffProfile, MedicalStaffProfileAdmin)
 admin.site.unregister(TokenProxy)
 # admin.site.unregister(Token)
-# admin.site.register(StaffCategory)
+admin.site.register(StaffCategory)
 # admin.site.register(CustomUser, CustomUserAdmin)
