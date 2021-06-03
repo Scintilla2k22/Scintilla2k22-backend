@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from.models import *
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from .paginations import *
 # Create your views here.
 
 class PatientHealthUpdateView(APIView):
@@ -34,5 +35,15 @@ def get_patients_health(request, **kwargs):
     else:
         return Response({'data': "Patient Health history doesn't exits ", 'status': status.HTTP_404_NOT_FOUND})
 
+
+class PatientHealthStatusList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PatientHealthUpdateSerializers
+    pagination_class = PatientHealthStatusListPagination
+
+    def get_queryset(self):
+        patient = get_object_or_404(PatientProfile,patient_id = self.kwargs['icmr'])
+        health_history = HealthStatus.objects.all().filter(patient=patient)
+        return health_history
 
 
