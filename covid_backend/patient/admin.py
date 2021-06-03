@@ -4,6 +4,7 @@ from .models import *
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportModelAdmin
 from .resources import *
+from health.admin import *
 from django.utils import timezone
 # Register your models here.
 
@@ -38,8 +39,20 @@ class PatientCovidTestInline(admin.TabularInline):
     model = PatientCovidTest
 
 
+class PatientBedHistoryAdmin(admin.ModelAdmin):
+    model = PatientBedHistory
+    list_display = ['patient', 'bed_id', 'created_on']
 
+    def has_add_permission(self, request): 
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
+        
 
+class BedCountAdmin(admin.ModelAdmin):
+    model = BedCount
+    list_display = ['total', 'general', 'oxygen', 'icu', 'ventillator']
+    readonly_fields = ['total']
 
 # class InputFilter(admin.SimpleListFilter):
 #     template = 'patient/input_filter.html'
@@ -123,7 +136,7 @@ class PatientProfileCustomFilter(admin.SimpleListFilter):
 
 class PatientProfileAdmin(ImportExportModelAdmin):
     inlines = [
-        PatientBedInline,  PatientCovidTestInline, PatientVaccinationStatusInline, VaccineInline, PatientMigrateInline,PatientDeathInline
+        PatientBedInline,  PatientCovidTestInline, PatientVaccinationStatusInline, VaccineInline, PatientMigrateInline,PatientDeathInline, HealthStatusInline
     ]
     global LIST_DISPLAY
     # list_display = LIST_DISPLAY
@@ -189,7 +202,7 @@ class PatientBedHistoryCutom(admin.ModelAdmin):
 
 admin.site.register(PatientProfile, PatientProfileAdmin)
 # admin.site.register(PatientBed)
-admin.site.register(BedCount)
+admin.site.register(BedCount, BedCountAdmin)
 # admin.site.register(PatientMigrate)
 # admin.site.register(PatientCovidTest)
 # admin.site.register(PatientVaccinationStatus , PatientVaccinationStatusAdmin)

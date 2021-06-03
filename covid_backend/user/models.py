@@ -8,6 +8,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 User = settings.AUTH_USER_MODEL
 # Create your models here.
 
@@ -75,7 +77,9 @@ class StaffCategory(models.Model):
     )
     title = models.CharField(max_length=30, choices=STAFF_CATEGORY)
     slug = models.SlugField()
-
+    class Meta:
+        verbose_name = _("Staff Category")
+        verbose_name_plural = _("Staff Categories")
     def __str__(self):
         return self.get_title_display()
 

@@ -10,7 +10,7 @@ from django.contrib import auth
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    add_form = CustomUserCreationForm
+    add_form = CustomUserCreationForm   
     fieldsets = (
 
         *UserAdmin.fieldsets, (
@@ -26,6 +26,9 @@ class CustomUserAdmin(UserAdmin):
         )
     )
 
+class MedicalStaffProfileAdmin(admin.ModelAdmin):
+    model = MedicalStaffProfile
+    list_display = ['user',  'staff_category',  'gender', 'contact_number', 'address']
 
 @admin.register(MedicalStaffProfile)
 class MedicalStaffProfileCustom(admin.ModelAdmin):

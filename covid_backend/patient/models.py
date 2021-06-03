@@ -228,9 +228,9 @@ class BedCount(models.Model):
     def clean(self):
         qs = BedCount.objects.all()
         
-        if self.general + self.oxygen + self.icu + self.ventillator != self.total:
-            raise ValidationError(('Invalid Entry, Total beds is not properly defined'))
-            
+        # if self.general + self.oxygen + self.icu + self.ventillator != self.total:
+        #     raise ValidationError(('Invalid Entry, Total beds is not properly defined'))
+        self.total = self.oxygen + self.ventillator + self.general + self.icu 
         if  qs.count() and qs[0].pk != self.pk :
             raise ValidationError(('Cannot create more than one model, make change on the above one only'))
 

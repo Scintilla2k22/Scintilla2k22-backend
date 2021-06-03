@@ -1,13 +1,19 @@
 from django.contrib import admin
+from django.contrib.admin.options import TabularInline
 from .models import *
 
-@admin.register(HealthStatus)
-class HealthStatusCustom(admin.ModelAdmin):
-    search_fields = ('patient','patient_condition')
+class HealthStatusInline(admin.TabularInline):
+    model = HealthStatus
 
-    def has_add_permission(self, request): 
-        return False
-    def has_change_permission(self, request, obj=None):
-        return False
-    def has_delete_permission(self, request, obj=None): 
-        return False
+
+# @admin.register(HealthStatus)
+# class HealthStatusCustom(admin.ModelAdmin):
+#     search_fields = ('patient','patient_condition')
+
+#     def has_add_permission(self, request): 
+#         return False
+#     def has_change_permission(self, request, obj=None):
+#         return False
+
+# admin.site.unregister(auth.models.Group)
+# admin.site.unregister(HealthStatus)
