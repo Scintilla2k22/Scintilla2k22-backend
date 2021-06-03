@@ -194,9 +194,14 @@ class PatientProfileAdmin(ImportExportModelAdmin):
         return False
 
     # def patient_migrate
+@admin.register(PatientBedHistory)
+class PatientBedHistoryCutom(admin.ModelAdmin):
+    def has_add_permission(self, request): 
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
 
 admin.site.register(PatientProfile, PatientProfileAdmin)
-admin.site.register(PatientBedHistory, PatientBedHistoryAdmin)
 # admin.site.register(PatientBed)
 admin.site.register(BedCount, BedCountAdmin)
 # admin.site.register(PatientMigrate)

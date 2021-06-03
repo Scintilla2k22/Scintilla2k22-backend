@@ -1,9 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin.options import TabularInline
 from .models import *
-import django.contrib.auth.admin
-import django.contrib.auth.models
-from django.contrib import auth
 
 class HealthStatusInline(admin.TabularInline):
     model = HealthStatus
@@ -18,5 +15,5 @@ class HealthStatusInline(admin.TabularInline):
 #     def has_change_permission(self, request, obj=None):
 #         return False
 
-admin.site.unregister(auth.models.Group)
+# admin.site.unregister(auth.models.Group)
 # admin.site.unregister(HealthStatus)
