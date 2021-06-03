@@ -6,6 +6,7 @@ from patient.models import *
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.db.models.signals import pre_delete, post_save, post_delete
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
@@ -26,6 +27,9 @@ class HealthStatus(TimeStamped):
     pulse_rate = models.IntegerField(blank=False, null=False)
     respiration_rate = models.IntegerField(blank=True, null=True)
     temperature = models.DecimalField(blank=False, null=False, max_digits=8, decimal_places=2)
+    class Meta:
+        verbose_name = _("Health Status")
+        verbose_name_plural = _("Health Status")
 
     def __str__(self):
         return "Patient : {0} | PC : {1} | OL : {2}% | BP : {3}/{4} mm Hg | PR : {5}bpm | T : {6}F | RR : {7} ".format(self.patient.patient_id,self.get_patient_condition_display(), \

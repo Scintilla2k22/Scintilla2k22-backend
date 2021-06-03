@@ -37,6 +37,7 @@ def get_patients_health(request, **kwargs):
 
 
 class PatientHealthStatusList(generics.ListAPIView):
+    # permission_classes = [IsAuthenticated]
     serializer_class = PatientHealthUpdateSerializers
     pagination_class = PatientHealthStatusListPagination
 
