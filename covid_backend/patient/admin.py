@@ -54,6 +54,7 @@ class BedCountAdmin(admin.ModelAdmin):
     list_display = ['total', 'general', 'oxygen', 'icu', 'ventillator']
     readonly_fields = ['total']
 
+
 # class InputFilter(admin.SimpleListFilter):
 #     template = 'patient/input_filter.html'
 
@@ -138,7 +139,7 @@ class PatientProfileAdmin(ImportExportModelAdmin):
     inlines = [
         PatientBedInline,  PatientCovidTestInline, PatientVaccinationStatusInline, VaccineInline, PatientMigrateInline,PatientDeathInline, HealthStatusInline
     ]
-    global LIST_DISPLAY
+    # global LIST_DISPLAY
     # list_display = LIST_DISPLAY
     
     resource_class = PatientProfileResource
