@@ -30,6 +30,7 @@ class HealthStatus(TimeStamped):
     class Meta:
         verbose_name = _("Health Status")
         verbose_name_plural = _("Health Status")
+        ordering = ['-created_on']
 
     def __str__(self):
         return "Patient : {0} | PC : {1} | OL : {2}% | BP : {3}/{4} mm Hg | PR : {5}bpm | T : {6}F | RR : {7} ".format(self.patient.patient_id,self.get_patient_condition_display(), \

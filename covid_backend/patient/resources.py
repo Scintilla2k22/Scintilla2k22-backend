@@ -33,12 +33,12 @@ class Resource(resources.ModelResource):
 
     # Patient Covid Test record
     is_tested = fields.Field(
-        column_name = 'Is Tested',
+        column_name = 'is_tested',
         attribute='patient_covid_test',
         widget = ForeignKeyWidget(PatientCovidTest, 'is_tested')        
     )
     test_type = fields.Field(
-        column_name = 'Test Type',       
+        column_name = 'test_type',       
     )
 
     def dehydrate_test_type(self, obj):
@@ -46,7 +46,7 @@ class Resource(resources.ModelResource):
             return obj.patient_covid_test.get_type_display()
 
     result = fields.Field(
-        column_name='Test Result',
+        column_name='result',
         attribute = 'patient_covid_test',
         widget = ForeignKeyWidget(PatientCovidTest, 'result')
     )
@@ -75,9 +75,8 @@ class Resource(resources.ModelResource):
     class Meta:
         model = PatientProfile
         
-        fields = ['name', 'patient_id', 'contact_number', 'admitted_on', 'age', 'gender','address', 'health_condition', 'patient_status',   'is_tested','test_type','result', 'is_vaccinated', 'vaccine_status', 'remark']
-        import_id_fields = ["name", 'contact_number', 'admitted_on', 'age', 'gender', 'address', 'patient_status', 'covid_status', 'remark', 'covid_facility', 'health_condition' \
-            , 'is_tested', 'test_type', 'result']
+        fields = ['name', 'patient_id', 'contact_number', 'admitted_on', 'age', 'gender','address', 'health_condition', 'patient_status','covid_status', 'covid_facility',  'is_tested','test_type','result', 'is_vaccinated', 'vaccine_status', 'remark']
+        import_id_fields = ["name", 'contact_number', 'admitted_on', 'age', 'gender', 'address', 'patient_status', 'covid_status', 'remark', 'covid_facility', 'health_condition', 'is_tested', 'test_type', 'result']
         abstract = True
 
 
