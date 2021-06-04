@@ -188,10 +188,10 @@ class PatientProfileAdmin(ImportExportModelAdmin):
                 return "{0} ( {1})".format( vaccine.get_type_display(), vaccine.vaccinated_on)
         return "NA"
     
-    # def has_add_permission(self, request): 
-    #     return False
-    # def has_change_permission(self, request, obj=None):
-    #     return False
+    def has_add_permission(self, request): 
+        return False
+    def has_change_permission(self, request, obj=None):
+        return False
 
     # def patient_migrate
 @admin.register(PatientBedHistory)
