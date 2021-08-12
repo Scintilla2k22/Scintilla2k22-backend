@@ -42,5 +42,5 @@ class MedicalStaffProfileCustom(admin.ModelAdmin):
 admin.site.unregister(TokenProxy)
 # admin.site.unregister(Token)
 # admin.site.register(StaffCategory)
-# admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.unregister(auth.models.Group)
