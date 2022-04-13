@@ -44,6 +44,7 @@ class Teams(TimeStamped):
     t_name = models.CharField(max_length=244)
     contestants = models.ManyToManyField(Contestants, blank = True)
     event = models.ForeignKey("events.Events", on_delete=models.CASCADE, blank=False, null=False)
+    image = models.ImageField(upload_to='image/teams/', blank=True, null=True)
     score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
     class Meta:
         verbose_name = "Team"

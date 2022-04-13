@@ -26,5 +26,5 @@ class TeamListSerializers(serializers.ModelSerializer):
     contestants = ContestantsListSerializers(many=True)
     class Meta:
         model = Teams
-        fields = ('id', 't_name', 'contestants', 'event')   
+        fields = ('id', 't_name', 'contestants', 'event', 'image')   
 
