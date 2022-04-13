@@ -15,7 +15,7 @@ User = settings.AUTH_USER_MODEL
 class EventListSerializers(serializers.ModelSerializer):
     class Meta:
         model = Events
-        fields = ('e_name', 'e_desc', 'co_ord', 'status', 'e_time')    
+        fields = ('e_name', 'e_desc', 'co_ord', 'status', 'e_time', 'image')    
 
 
 

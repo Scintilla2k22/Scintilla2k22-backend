@@ -29,7 +29,7 @@ class Contestants(TimeStamped):
     contact_number = models.IntegerField(blank=True, null=True)
     branch = models.CharField( max_length = 244, choices=BRANCH_CHOICE)
     year = models.SmallIntegerField(choices=YEAR)
-    event = models.ManyToManyField("events.Events",  blank=True)
+    events = models.ManyToManyField("events.Events",related_name="events", blank=True)
     score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
     class Meta:
         verbose_name = "Contestant"

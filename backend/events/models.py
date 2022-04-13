@@ -19,12 +19,15 @@ class Events(TimeStamped):
     (2, 'live'),
     (3, 'ended')
     )
+    id = models.AutoField(primary_key=True)
     e_name = models.CharField(max_length=255, blank=False, null=False, verbose_name="Event Name")
     e_desc = models.TextField(blank=True, verbose_name="Description")
     co_ord = models.ManyToManyField(User,   verbose_name= "Co-ordinators", blank=True)
     type = models.SmallIntegerField(choices=CHOICES, verbose_name= "Type")
     status = models.SmallIntegerField(choices = EVENT_STATUS, default = 0)
     e_time = models.DateTimeField(auto_now_add = False, auto_now = False)
+    image = models.ImageField(upload_to='image/', blank=True, null=True)
+    
     class Meta:
         verbose_name = "Event"
     
