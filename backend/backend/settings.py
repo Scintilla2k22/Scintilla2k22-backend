@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-t#(_7*b2-t)^9q+i_z0!4(v=&dt+93w*!e8vp#8x!8d8un+qw7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -74,6 +74,7 @@ REST_FRAMEWORK = {
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -117,6 +118,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
