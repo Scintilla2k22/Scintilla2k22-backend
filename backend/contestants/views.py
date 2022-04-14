@@ -15,7 +15,7 @@ User = settings.AUTH_USER_MODEL
 @api_view(['GET'])
 def filter_contestants(request, **kwargs):
     event = kwargs.get("id")
-    player = Contestants.objects.all().filter( event__type = 0, event__id = event)
+    player = Contestants.objects.all().filter( events__type = 0, events__id = event)
     serializers = ContestantsListSerializers(player, many=True)
     data =   {'data': serializers.data, 'msg' : 'filtered constestants listed', 'status': status.HTTP_200_OK }      
     if player.exists():                         
