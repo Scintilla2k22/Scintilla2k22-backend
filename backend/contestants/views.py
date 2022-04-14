@@ -17,11 +17,11 @@ def filter_contestants(request, **kwargs):
     event = kwargs.get("id")
     player = Contestants.objects.all().filter( event__type = 0, event__id = event)
     serializers = ContestantsListSerializers(player, many=True)
-    data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
+    data =   {'data': serializers.data, 'msg' : 'filtered constestants listed', 'status': status.HTTP_200_OK }      
     if player.exists():                         
         return Response(data)
     else:
-        return Response({'data': "No Contestants", 'status': status.HTTP_404_NOT_FOUND})
+        return Response({'data': [] , 'msg' : "No Contestants", 'status': status.HTTP_404_NOT_FOUND})
 
 
 @api_view(['GET'])
@@ -29,9 +29,9 @@ def filter_team(request, **kwargs):
     id = kwargs.get("id")
     team = Teams.objects.all().filter(event__type = 0, id = id)
     serializers = TeamListSerializers(team, many=True)
-    data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
+    data =   {'data': serializers.data, 'msg' : "Filtered Team listed", 'status': status.HTTP_200_OK }      
     if team.exists():                         
         return Response(data)
     else:
-        return Response({'data': "No Team", 'status': status.HTTP_404_NOT_FOUND})
+        return Response({'data': [] , 'msg' : "No Team", 'status': status.HTTP_404_NOT_FOUND})
 
