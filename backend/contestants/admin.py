@@ -4,3 +4,5 @@ from .models import *
 
 admin.site.register(Contestants)
 admin.site.register(Teams)
+admin.site.register(Score)
+

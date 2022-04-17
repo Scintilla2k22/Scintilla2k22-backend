@@ -88,7 +88,8 @@ def create_events(row):
         "type" : row.get("type"),
         "e_time" : str(timezone.now()),
         "status" : row.get("status"),
-        "id" : row.get("id")
+        "id" : row.get("id"),
+        "code" : row.get("code")
     }
  
     res = Events(**payload)

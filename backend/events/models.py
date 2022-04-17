@@ -15,7 +15,7 @@ class Events(TimeStamped):
     (1, 'team')
     )
     EVENT_STATUS = (
-    (0, 'comming soon' ),
+    (1, 'comming soon' ),
     (2, 'live'),
     (3, 'ended')
     )
@@ -28,11 +28,12 @@ class Events(TimeStamped):
     e_time = models.DateTimeField(auto_now_add = False, auto_now = False)
     image = models.ImageField(upload_to='image/events/', blank=True, null=True)
     url = models.URLField(null=True, blank=True)    
+    code = models.CharField(max_length=200, blank=True, null=True)
     class Meta:
         verbose_name = "Event"
     
 
     def __str__(self):
-        return "event - {0} - {1}".format(self.e_name, self.get_status_display())
+        return "event - {0} - {1} - {2}".format(self.e_name, self.code, self.get_status_display())
     
    

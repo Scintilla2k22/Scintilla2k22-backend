@@ -1,3 +1,4 @@
+from mimetypes import guess_all_extensions
 from django.shortcuts import render
 # third party imports
 from rest_framework.response import Response
@@ -28,9 +29,9 @@ class EventsView(APIView):
 @api_view(['GET'])
 def get_event(request, **kwargs):
     id = kwargs.get('id')
-    qs  = Events.objects.all().filter(id = id)
-    serializer = EventListSerializers(qs, many=True)
-    if qs.exists():        
+    qs  = get_object_or_404(Events, id = id)
+    serializer = EventListSerializers(qs)
+    if qs:        
         return Response({"data": serializer.data,  'msg' : "Search Result Found", "status": status.HTTP_200_OK })
     else:
         return Response({'data': [],  'msg' : "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
