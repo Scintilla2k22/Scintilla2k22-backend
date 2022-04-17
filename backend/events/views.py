@@ -15,11 +15,11 @@ class EventsView(APIView):
     def get(self, request, *args, **kwargs):      
         events = Events.objects.all()
         serializers = EventListSerializers(events, many=True)
-        data =   {'data': serializers.data, 'status': status.HTTP_200_OK }      
+        data =   {'data': serializers.data, 'msg' : 'Events listed', 'status': status.HTTP_200_OK }      
         if events.exists():                         
             return Response(data)
         else:
-            return Response({'data': "No Events added", 'status': status.HTTP_404_NOT_FOUND})
+            return Response({'data': [] , 'msg' : "No Events added", 'status': status.HTTP_404_NOT_FOUND})
 
 
  
@@ -38,10 +38,21 @@ def filter_events(request, **kwargs):
 
     serializer = EventListSerializers(qs, many=True)
     if qs.exists():        
-        return Response({"data": serializer.data, "status": status.HTTP_200_OK })
+        return Response({"data": serializer.data,  'msg' : "Search Result Found", "status": status.HTTP_200_OK })
     else:
-        return Response({'data': "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
+        return Response({'data': [],  'msg' : "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
 
  
 
+@api_view(['GET'])
+def filter_event_type(request, **kwargs):
+    event_type = kwargs.get('type')
+    qs  = Events.objects.all().filter(type = event_type)
+    serializer = EventListSerializers(qs, many=True)
+    if qs.exists():        
+        return Response({"data": serializer.data, "status": status.HTTP_200_OK })
+    else:
+        return Response({'data':[] , 'msg' : "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
+
+ 
 
