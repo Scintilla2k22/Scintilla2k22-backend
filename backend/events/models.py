@@ -27,7 +27,7 @@ class Events(TimeStamped):
     status = models.SmallIntegerField(choices = EVENT_STATUS, default = 0)
     e_time = models.DateTimeField(auto_now_add = False, auto_now = False)
     image = models.ImageField(upload_to='image/events/', blank=True, null=True)
-    
+    url = models.URLField(null=True, blank=True)    
     class Meta:
         verbose_name = "Event"
     

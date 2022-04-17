@@ -1,0 +1,35 @@
+id,e_name,e_desc,type,status,e_time,code,co_ord
+1,Dance Competition," Participants from different years and branches would be competing with each to win
+the competition. The Competition will be in three categories of dance i.e, Western,
+Classical and Folk.
+Solo, duo and group dance can be performed under each category.",1,0,15/1/2001 12:0:0,DANC,"7060326613, 9119710171"
+2,Singing Competition,"Participants from different years and branches would be competing with each other.
+    The most melodious amongst all of the participants will be announced as the winner.
+    The competition will be in two categories`,
+    subtitle: ""Talk is cheap; show me the code",0,0,15/1/2001 12:0:0,SING,7055024508
+3,Drama/ Skit Competition,"Drama is the specific mode of fiction represented in performance: a play, mime,
+    ballet etc. Multiple groups from different years will be participating in the competition.
+    The best amongst all will be chosen as the winner of the competition.",1,0,15/1/2001 12:0:0,SKIT,"9997907591, 7055566622, 7300923828"
+4,Poetry Competition,"Participants from different years and branches will be delivering their poems. The
+    best amongst all will be chosen as the winner of the competition",0,0,15/1/2001 12:0:0,POET,"6399932775, 7055566622"
+5,Talent Hunt,"This competition is beyond the boundation of specific art forms. In this, participants
+    from different years can participate to showcase their talent. It includes activities like
+    standup comedy, playing instruments, singing, dancing etc.",0,0,15/1/2001 12:0:0,TALE,
+6,Campus Diva,"In this competition participants will be mimicking their chosen characters from
+    different movies and would be performing a short scene of the actor from that movie.",1,0,15/1/2001 12:0:0,CAMP,"7310874328, 8126705777"
+7,Roadies,"This competition consists of multiple tasks that test the participants on the basis of
+    physical, mental and cognitive ability. The best amongst the all participants will be
+    declared the winner of the competition.",0,0,15/1/2001 12:0:0,ROAD,"9639260117, 8755268699"
+8,Face Painting,"In this competition, participants will be performing face art on the faces of their fellows. The
+    best artist will be chosen to be the winner of the competition",0,0,15/1/2001 12:0:0,FACE,8057238063
+9,Frame Designing,"In this competition, participants will be participating in groups. The main task of the
+    competition will be designing the frames and props with which people can take
+    pictures with. The best amongst them will be chosen as the winner.",0,0,15/1/2001 12:0:0,FRAM,
+10,Treasure Hunt,"`Multiple teams from different years will be participating in the competition against each other.
+    The team who finds the maximum number of clues will be declared as the winner of the
+    competition.",1,0,15/1/2001 12:0:0,TREA,8126570573
+11,Solo Dance Competition," Participants from different years and branches would be competing with each to win
+the competition. The Competition will be in three categories of dance i.e, Western,
+Classical and Folk.
+Solo, duo and group dance can be performed under each category.",0,0,15/1/2001 12:0:0,DANC2,"7060326613, 9119710171"
+12,Mandala,No description,0,0,,MAND,"9411758750, 8126570573"
