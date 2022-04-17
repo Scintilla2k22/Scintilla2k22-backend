@@ -16,7 +16,9 @@ User = settings.AUTH_USER_MODEL
 class ContestantsListSerializers(serializers.ModelSerializer):
     class Meta:
         model = Contestants
-        fields = ('id', 'name', 'branch', 'year')    
+        fields = '__all__'    
+        
+        # fields = ('id', 'name', 'branch', 'year', 'created_on')    
 
 
 
@@ -26,5 +28,7 @@ class TeamListSerializers(serializers.ModelSerializer):
     contestants = ContestantsListSerializers(many=True)
     class Meta:
         model = Teams
-        fields = ('id', 't_name', 'contestants', 'event', 'image')   
+        # fields = ('id', 't_name', 'contestants', 'event', 'image', "created_on")
+        fields = '__all__'    
+           
 
