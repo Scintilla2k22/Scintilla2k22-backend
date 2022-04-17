@@ -1,6 +1,3 @@
-from asyncio import events
-from statistics import mode
-from tabnanny import verbose
 from django.db import models
 from backend.utils.time_stamp import *
 # from events.models import Events
