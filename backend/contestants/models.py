@@ -1,4 +1,5 @@
 from asyncio import events
+from asyncio.windows_events import NULL
 from statistics import mode
 from tabnanny import verbose
 from django.db import models
@@ -43,7 +44,7 @@ class Contestants(TimeStamped):
 class Teams(TimeStamped):
     t_name = models.CharField(max_length=244)
     contestants = models.ManyToManyField(Contestants, blank = True)
-    event = models.OneToOneField("events.Events", on_delete=models.CASCADE, blank=False, null=False)
+    event = models.OneToOneField("events.Events", on_delete=models.SET_NULL, blank=True, null=True, default=NULL)
     image = models.ImageField(upload_to='image/teams/', blank=True, null=True)
     score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
     class Meta:
