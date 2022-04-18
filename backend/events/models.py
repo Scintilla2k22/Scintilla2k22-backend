@@ -5,7 +5,35 @@ from django.db import models
 from django.contrib.auth.models import User
 from contestants.models import *
 from backend.utils.time_stamp import *
+from django.contrib.auth.models import AbstractUser
 
+
+class Coordinators(AbstractUser):
+    BRANCH_CHOICE = (
+        ("CSE", ("Computer Science and Engineering")),
+        ("MEC", ("Mechanical Engineering")),
+        ("ECE", ("Electronics and Communication")),
+        ("CHE", ("Chemical Engineering")),
+        ("EE", ("OTHERS")),
+        ("CIV", ("OTHERS")),
+    )
+    YEAR = (
+        ( 1, "1st year"),
+        ( 2, "2nd year"),
+        ( 3, "3rd year"),
+        ( 4, "4th year"),
+
+    )
+    GENDER_CHOICE = (
+    ("M", ("MALE")),
+    ("F", ("FEMALE")),
+    ("O", ("OTHERS"))
+    )
+    username = models.CharField(max_length=255, unique=True, blank=False, null=False)   
+    contact_number = models.IntegerField(blank=True, null=True)
+    branch = models.CharField( max_length = 244, choices=BRANCH_CHOICE)
+    year = models.SmallIntegerField(choices=YEAR)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=True, blank=True)
 
 
 
