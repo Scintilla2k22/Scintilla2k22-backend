@@ -51,6 +51,8 @@ def create_coords(row):
     except :
         traceback.print_exc()
     
+    
+
     payload = {
         "username" : str(row.get("contact_number"))[-10:],
         'first_name' : row.get("name"),
