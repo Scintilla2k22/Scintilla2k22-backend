@@ -1,5 +1,6 @@
 from multiprocessing import Event
 from django.core.management.base import BaseCommand
+from django.shortcuts import get_object_or_404
 from numpy import add
 import pandas as pd
 from pandas.io.sql import has_table
@@ -7,8 +8,7 @@ from contestants.models import *
 from django.conf import settings
 import os
 import traceback
-from events.models import Events
-from django.contrib.auth.models import User
+from events.models import *
 from django.utils import timezone
 
 MODE_REFRESH = 'refresh'
@@ -31,9 +31,44 @@ def clear_data():
     # logger.info("Delete Restaurants instances")
     Contestants.objects.all().delete()
 
+def clear_coord():
+    Coordinators.objects.all().filter(is_superuser = False).delete()
+
 
 def clear_team():
     Teams.objects.all().delete()
+
+
+def create_coords(row):
+    row = dict(row)
+    events = []
+    try:
+        ev_list = row.get("events_coordinating", "").split(',')
+        for event  in ev_list:
+            ev = event.split('-')[0].strip()
+            ev = get_object_or_404(Events, code = ev)
+            events.append(ev)
+    except :
+        traceback.print_exc()
+    
+    payload = {
+        "username" : str(row.get("contact_number"))[-10:],
+        'first_name' : row.get("name"),
+        'email' : row.get("email"),
+        'gender' : row.get("gender"),
+        'branch' : row.get("branch"),
+        'year' : row.get("year"),
+        "contact_number" : str(row.get("contact_number"))[-10:],
+
+    }
+    print(payload, "\n\n\n\n\n\n")
+    user = Coordinators(**payload)
+    user.set_password(payload["username"])
+    user.save()
+    for event in events:
+        event.co_ord.add(user)
+    print("Coordinator created - ", payload["username"])
+    return user
 
 def create_team(row):
     row = dict(row)
@@ -75,7 +110,7 @@ def create_events(row):
     cords_lis = []
     try:
         for cords in map(str, str(row["co_ord"] ).split(',')):
-            c = User.objects.all().filter(username = cords)
+            c = Coordinators.objects.all().filter(username = cords)
             if c.exists():
                 cords_lis.append(c.first().id)
     except:
@@ -88,7 +123,8 @@ def create_events(row):
         "type" : row.get("type"),
         "e_time" : str(timezone.now()),
         "status" : row.get("status"),
-        "id" : row.get("id")
+        "id" : row.get("id"),
+        "code" : row.get("code")
     }
  
     res = Events(**payload)
@@ -157,6 +193,17 @@ def run_seed(self, mode):
 
     ##############################
 
+    # Coordinators Seeding
+
+    r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
+    df = pd.read_csv(r_path)
+    clear_coord()
+    if mode == MODE_CLEAR:
+        return
+    for index, row in df.iterrows():
+        create_coords(row)
+
+
     # Contestants Seeding 
 
     r_path = os.path.join(settings.BASE_DIR,'static/contestant.csv')
@@ -179,7 +226,7 @@ def run_seed(self, mode):
     clear_team()
     if mode == MODE_CLEAR:
         return
-    for index, row in df.iterrows():
-        create_team(row)
+    # for index, row in df.iterrows():
+    #     create_team(row)
 
     ################################

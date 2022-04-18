@@ -4,6 +4,10 @@ from backend.utils.time_stamp import *
 # Create your models here.
 
 
+class Score(TimeStamped):
+    score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    event = models.ForeignKey("events.Events",related_name="event_score", on_delete=models.CASCADE, blank=True, null=True)
+
 
 class Contestants(TimeStamped):
     BRANCH_CHOICE = (
@@ -27,7 +31,8 @@ class Contestants(TimeStamped):
     branch = models.CharField( max_length = 244, choices=BRANCH_CHOICE)
     year = models.SmallIntegerField(choices=YEAR)
     events = models.ManyToManyField("events.Events",related_name="events", blank=True)
-    score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    score = models.ForeignKey(Score, on_delete=models.CASCADE, null=True, blank=True)
+
     class Meta:
         verbose_name = "Contestant"
 
@@ -40,9 +45,11 @@ class Contestants(TimeStamped):
 class Teams(TimeStamped):
     t_name = models.CharField(max_length=244)
     contestants = models.ManyToManyField(Contestants, blank = True)
-    event = models.OneToOneField("events.Events", on_delete=models.SET_NULL, blank=True, null=True)
+    event = models.ForeignKey("events.Events", on_delete=models.SET_NULL, blank=True, null=True)
     image = models.ImageField(upload_to='image/teams/', blank=True, null=True)
-    score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    score = models.ForeignKey(Score, on_delete=models.CASCADE, null=True, blank=True )
+    
+    
     class Meta:
         verbose_name = "Team"
 

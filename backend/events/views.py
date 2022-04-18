@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404
 from.models import *
 from rest_framework.decorators import api_view, permission_classes
 from django.utils.timezone import datetime
-User = settings.AUTH_USER_MODEL
 
 
 class EventsView(APIView):
@@ -24,6 +23,16 @@ class EventsView(APIView):
 
  
 
+
+@api_view(['GET'])
+def get_event(request, **kwargs):
+    id = kwargs.get('id')
+    qs  = get_object_or_404(Events, id = id)
+    serializer = EventListSerializers(qs)
+    if qs:        
+        return Response({"data": serializer.data,  'msg' : "Search Result Found", "status": status.HTTP_200_OK })
+    else:
+        return Response({'data': [],  'msg' : "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
 
 
 @api_view(['GET'])
