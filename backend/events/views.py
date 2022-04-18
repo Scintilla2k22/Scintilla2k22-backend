@@ -65,3 +65,15 @@ def filter_event_type(request, **kwargs):
 
  
 
+@api_view(['GET'])
+def filter_event_status(request, **kwargs):
+    stat = kwargs.get('status')
+    qs  = Events.objects.all().filter(status = stat)
+    serializer = EventListSerializers(qs, many=True)
+    if qs.exists():        
+        return Response({"data": serializer.data, "status": status.HTTP_200_OK })
+    else:
+        return Response({'data':[] , 'msg' : "Searched result not found :-( ", 'status': status.HTTP_404_NOT_FOUND})
+
+ 
+
