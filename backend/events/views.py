@@ -1,4 +1,3 @@
-from mimetypes import guess_all_extensions
 from django.shortcuts import render
 # third party imports
 from rest_framework.response import Response
@@ -9,7 +8,6 @@ from django.shortcuts import get_object_or_404
 from.models import *
 from rest_framework.decorators import api_view, permission_classes
 from django.utils.timezone import datetime
-User = settings.AUTH_USER_MODEL
 
 
 class EventsView(APIView):

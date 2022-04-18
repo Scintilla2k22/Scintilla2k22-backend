@@ -49,6 +49,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
+AUTH_USER_MODEL = 'events.Coordinators'
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

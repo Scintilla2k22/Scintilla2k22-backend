@@ -8,8 +8,7 @@ from rest_framework.fields import NOT_READ_ONLY_WRITE_ONLY
 from .models import *
 from django.conf import settings
 from django.utils import timezone
-
-User = settings.AUTH_USER_MODEL
+from events.models import Coordinators
 
 
 
