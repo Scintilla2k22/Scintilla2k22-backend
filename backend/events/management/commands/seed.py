@@ -180,7 +180,7 @@ def run_seed(self, mode):
     clear_team()
     if mode == MODE_CLEAR:
         return
-    for index, row in df.iterrows():
-        create_team(row)
+    # for index, row in df.iterrows():
+    #     create_team(row)
 
     ################################
