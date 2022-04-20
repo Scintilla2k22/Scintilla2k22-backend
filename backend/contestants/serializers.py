@@ -21,18 +21,24 @@ class ScoreSerializer(serializers.ModelSerializer):
 
 
 class ContestantsListSerializers(serializers.ModelSerializer):
+
+    score = serializers.SerializerMethodField()
     class Meta:
         model = Contestants
         fields = '__all__'    
         
         # fields = ('id', 'name', 'branch', 'year', 'created_on')    
+    
+    def get_score(self, obj):
+        event_id = self.context.get("event_id")
+        sc = Score.objects.filter(event__id = event_id, participants__id = obj.id)
+        if sc.exists():
+            return sc.first().score
+
+        return 0
 
 
-class ScoreSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Score
-        fields = 'score'
+ 
 
 
 class TeamListSerializers(serializers.ModelSerializer):

@@ -1,14 +1,11 @@
-from multiprocessing import Event
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
-from numpy import add
 import pandas as pd
-from pandas.io.sql import has_table
-from contestants.models import *
 from django.conf import settings
 import os
 import traceback
 from events.models import *
+from contestants.models import *
 from django.utils import timezone
 
 MODE_REFRESH = 'refresh'
@@ -28,7 +25,6 @@ class Command(BaseCommand):
 
 def clear_data():
     """Deletes all the table data"""
-    # logger.info("Delete Restaurants instances")
     Contestants.objects.all().delete()
 
 def clear_coord():
@@ -63,7 +59,6 @@ def create_coords(row):
         "contact_number" : str(row.get("contact_number"))[-10:],
 
     }
-    print(payload, "\n\n\n\n\n\n")
     user = Coordinators(**payload)
     user.set_password(payload["username"])
     user.save()
@@ -71,6 +66,8 @@ def create_coords(row):
         event.co_ord.add(user)
     print("Coordinator created - ", payload["username"])
     return user
+
+
 
 def create_team(row):
     row = dict(row)
@@ -102,13 +99,11 @@ def create_team(row):
         res.save()
     except:
         print("error")
-    # logger.info("{} res created.".format(res))
     return res
 
 
 def create_events(row):
     row = dict(row)
-    # logger.info("Creating Contestants")
     cords_lis = []
     try:
         for cords in map(str, str(row["co_ord"] ).split(',')):
@@ -142,7 +137,7 @@ def create_events(row):
 
 def clear_data_contestants():
     """Deletes all the table data"""
-    # logger.info("Delete Restaurants instances")
+    # logger.info("Delete contestants instances")
     Contestants.objects.all().delete()
 
 
@@ -151,11 +146,13 @@ def create_contestants(row):
     row = dict(row)
     # logger.info("Creating Contestants")
     event_lis = []
+    event_obj_lis = []
     try:
         for events in map(str, row["events"].strip().split(',')):
             events = events.strip()
             c = Events.objects.all().filter(e_name = events)
             if c.exists():
+                event_obj_lis.append(c.first())
                 event_lis.append(c.first().id)
     except:
         traceback.print_exc()
@@ -172,10 +169,16 @@ def create_contestants(row):
     res.save()
     print("  Contestant added -- ",payload["name"])
     res.events.add(*event_lis)
+    # res.score.add(*score_lis)
     res.save()
-
+    for ev in event_obj_lis:
+        sc = Score(participants = res, score = 1, event = ev)
+        sc.save()
     # logger.info("{} res created.".format(res))
     return res
+
+
+
 
 def run_seed(self, mode):
     """ Seed database based on mode
@@ -183,7 +186,9 @@ def run_seed(self, mode):
     :param mode: refresh / clear 
     :return:
     """
-    # Event Seeding
+
+
+    # Event Seeding ####################
 
     r_path = os.path.join(settings.BASE_DIR,'static/events.csv')
     df = pd.read_csv(r_path)
@@ -193,9 +198,12 @@ def run_seed(self, mode):
     for index, row in df.iterrows():
         create_events(row)
 
-    ##############################
+    ####################################
 
-    # Coordinators Seeding
+
+
+
+    # Coordinators Seeding  ###############
 
     r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
     df = pd.read_csv(r_path)
@@ -204,6 +212,8 @@ def run_seed(self, mode):
         return
     for index, row in df.iterrows():
         create_coords(row)
+
+    ######################################
 
 
     # Contestants Seeding 
@@ -220,7 +230,9 @@ def run_seed(self, mode):
 
     #####################################
     
-    # Team Seeding
+
+
+    # Team Seeding  ################
     
     r_path = os.path.join(settings.BASE_DIR,'static/teams.csv')
 
@@ -228,7 +240,7 @@ def run_seed(self, mode):
     clear_team()
     if mode == MODE_CLEAR:
         return
-    # for index, row in df.iterrows():
-    #     create_team(row)
+    for index, row in df.iterrows():
+        create_team(row)
 
     ################################

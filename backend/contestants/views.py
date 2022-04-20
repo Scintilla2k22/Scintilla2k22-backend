@@ -18,7 +18,7 @@ def filter_contestants(request, **kwargs):
     player = Contestants.objects.all().filter( events__type = 0, events__id = event)
     # player = Contestants.objects.all()
 
-    serializers = ContestantsListSerializers(player, many=True)
+    serializers = ContestantsListSerializers(player, many=True, context = { "event_id" : event})
     data =   {'data': serializers.data, 'msg' : 'filtered constestants listed', 'status': status.HTTP_200_OK }      
     if player.exists():                         
         return Response(data)
@@ -28,9 +28,9 @@ def filter_contestants(request, **kwargs):
 
 @api_view(['GET'])
 def filter_team(request, **kwargs):
-    id = kwargs.get("id")
-    # team = Teams.objects.all().filter(event__type = 0, id = id)
-    team = Teams.objects.all()
+    event = kwargs.get("id")
+    team = Teams.objects.all().filter(event__id = event)
+    # team = Teams.objects.all()
     serializers = TeamListSerializers(team, many=True)
     data =   {'data': serializers.data, 'msg' : "Filtered Team listed", 'status': status.HTTP_200_OK }      
     if team.exists():                         

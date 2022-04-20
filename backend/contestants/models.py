@@ -7,6 +7,7 @@ from backend.utils.time_stamp import *
 class Score(TimeStamped):
     score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
     event = models.ForeignKey("events.Events",related_name="event_score", on_delete=models.CASCADE, blank=True, null=True)
+    participants = models.ForeignKey("Contestants", related_name="participants", on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Contestants(TimeStamped):
@@ -15,14 +16,14 @@ class Contestants(TimeStamped):
         ("MEC", ("Mechanical Engineering")),
         ("ECE", ("Electronics and Communication")),
         ("CHE", ("Chemical Engineering")),
-        ("EE", ("OTHERS")),
-        ("CIV", ("OTHERS")),
+        ("EE", ("Electrical Engineering")),
+        ("CIV", ("Civil Engineering")),
     )
     YEAR = (
         ( 1, "1st year"),
         ( 2, "2nd year"),
         ( 3, "3rd year"),
-        ( 4, "4th year"),
+        ( 4, "final year"),
 
     )
     id = models.AutoField(primary_key=True)
@@ -31,7 +32,7 @@ class Contestants(TimeStamped):
     branch = models.CharField( max_length = 244, choices=BRANCH_CHOICE)
     year = models.SmallIntegerField(choices=YEAR)
     events = models.ManyToManyField("events.Events",related_name="events", blank=True)
-    score = models.ForeignKey(Score, on_delete=models.CASCADE, null=True, blank=True)
+    # score = models.ForeignKey(Score, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name = "Contestant"
