@@ -75,21 +75,19 @@ def create_team(row):
     try:
         for cords in map(str, str(row["contestants"] ).split(',')):
             cords = cords.strip()
-            c = Contestants.objects.all().filter(contact_number = int(cords))
+            c = Contestants.objects.all().filter(contact_number = cords)
             if c.exists():
                 contnt_lis.append(c.first().id)
     except:
         traceback.print_exc()
-        print("nan")
 
     payload = {
         "t_name" : row.get("t_name"),
-        
     }
 
 
     try :
-        event = Events.objects.all().filter(id = row.get("event") )
+        event = Events.objects.all().filter(code = row.get("event") )
         if(event.exists()):
             payload["event"] = event.first()
         res = Teams(**payload)

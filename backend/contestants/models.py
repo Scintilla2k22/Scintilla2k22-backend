@@ -9,6 +9,8 @@ class Score(TimeStamped):
     event = models.ForeignKey("events.Events",related_name="event_score", on_delete=models.CASCADE, blank=True, null=True)
     participants = models.ForeignKey("Contestants", related_name="participants", on_delete=models.CASCADE, null=True, blank=True)
 
+    def __str__(self):
+        return f"Score-{self.score} : participants - {self.participants.name} : evebt - {self.event.e_time}"
 
 class Contestants(TimeStamped):
     BRANCH_CHOICE = (
@@ -48,7 +50,8 @@ class Teams(TimeStamped):
     contestants = models.ManyToManyField(Contestants, blank = True)
     event = models.ForeignKey("events.Events", on_delete=models.SET_NULL, blank=True, null=True)
     image = models.ImageField(upload_to='image/teams/', blank=True, null=True)
-    score = models.ForeignKey(Score, on_delete=models.CASCADE, null=True, blank=True )
+    score = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+   
     
     
     class Meta:
