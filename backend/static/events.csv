@@ -4,9 +4,11 @@ the competition. The Competition will be in three categories of dance i.e, Weste
 Classical and Folk.
 Solo, duo and group dance can be performed under each category.",1,1,15/1/2001 12:0:0,DANC,"7060326613, 9119710171"
 2,Singing Competition,"Participants from different years and branches would be competing with each other.
-    The most melodious amongst all of the participants will be announced as the winner.
-    The competition will be in two categories`,
-    subtitle: ""Talk is cheap; show me the code",0,1,15/1/2001 12:0:0,SING,7055024508
+The most melodious amongst all of the participants will be announced as the winner.
+The competition will be in two categories:
+1. Solo
+2. Duo
+",0,1,15/1/2001 12:0:0,SING,7055024508
 3,Drama/ Skit Competition,"Drama is the specific mode of fiction represented in performance: a play, mime,
     ballet etc. Multiple groups from different years will be participating in the competition.
     The best amongst all will be chosen as the winner of the competition.",1,1,15/1/2001 12:0:0,SKIT,"9997907591, 7055566622, 7300923828"
@@ -25,11 +27,16 @@ Solo, duo and group dance can be performed under each category.",1,1,15/1/2001 1
 9,Frame Designing,"In this competition, participants will be participating in groups. The main task of the
     competition will be designing the frames and props with which people can take
     pictures with. The best amongst them will be chosen as the winner.",0,2,15/1/2001 12:0:0,FRAM,
-10,Treasure Hunt,"`Multiple teams from different years will be participating in the competition against each other.
+10,Treasure Hunt,"Multiple teams from different years will be participating in the competition against each other.
     The team who finds the maximum number of clues will be declared as the winner of the
     competition.",1,2,15/1/2001 12:0:0,TREA,8126570573
 11,Solo Dance Competition," Participants from different years and branches would be competing with each to win
 the competition. The Competition will be in three categories of dance i.e, Western,
 Classical and Folk.
 Solo, duo and group dance can be performed under each category.",0,2,15/1/2001 12:0:0,DANC2,"7060326613, 9119710171"
-12,Mandala,No description,0,2,,MAND,"9411758750, 8126570573"
+12,Mandala,"Participants from different years will participate in mandala making and the best amongst all
+will be declared as the winner.",0,2,15/1/2001 12:0:1,MAND,"9411758750, 8126570573"
+13,Photography Competition,"The main task of the event will be to present photographs related to different topics clicked
+inside the college campus. Participants from different years will participate in the
+competition. The best amongst all will be chosen as the winner.
+",0,1,15/1/2001 12:0:2,PHOT,9818715563
