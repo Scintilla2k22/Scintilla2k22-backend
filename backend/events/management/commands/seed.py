@@ -79,15 +79,8 @@ def create_team(row):
                 c = Contestants.objects.all().filter(contact_number = cont[-10:])
                 if c.exists():
                     contnt_lis.append(c.first().id)
-            
-        
-
     except:
         traceback.print_exc()
-
-   
-
-
     try :
         payload = {"t_name" : row.get("t_name")}
         event = Events.objects.all().filter(code = row.get("event") )
@@ -100,7 +93,7 @@ def create_team(row):
         res.save()
     except:
         print("error")
-        
+
     return res
 
 
@@ -226,11 +219,11 @@ def run_seed(self, mode):
 
     r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
     df = pd.read_csv(r_path)
-    # clear_coord()
+    clear_coord()
     if mode == MODE_CLEAR:
         return
-    # for index, row in df.iterrows():
-    #     create_coords(row)
+    for index, row in df.iterrows():
+        create_coords(row)
 
     ######################################
 
