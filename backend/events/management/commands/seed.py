@@ -150,8 +150,9 @@ def create_contestants(row):
         for event  in ev_list:
             ev = event.split('-')[0].strip()
             ev = Events.objects.all().filter(code = ev)
-            event_lis.append(ev.first().id)
-            event_obj_lis.append(ev.first())
+            if ev.exists():
+                event_lis.append(ev.first().id)
+                event_obj_lis.append(ev.first())
     except :
         traceback.print_exc()
     # try:
@@ -173,14 +174,17 @@ def create_contestants(row):
     }
      
     res = Contestants.objects.get_or_create(contact_number = payload["contact_number"])
-    res.name = payload["name"]
-    res.branch = payload["branch"]
-    res.year = payload["year"]
-    res.save()
-    print("  Contestant added -- ",payload["name"])
-    res.events.add(*event_lis)
-    # res.score.add(*score_lis)
-    res.save()
+    # print(res)
+
+    if res:
+        res = res[0]
+        res.name = payload["name"]
+        res.branch = payload["branch"]
+        res.year = payload["year"]
+        res.save()
+        print("  Contestant added -- ",payload["name"])
+        res.events.add(*event_lis)
+        res.save()
 
     # for ev in event_obj_lis:
     #     sc = Score(participants = res, score = 1, event = ev)

@@ -31,8 +31,8 @@ class Contestants(TimeStamped):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=240, null=False, blank=False)
     contact_number = models.IntegerField(blank=True, null=True)
-    branch = models.CharField( max_length = 244, choices=BRANCH_CHOICE)
-    year = models.SmallIntegerField(choices=YEAR)
+    branch = models.CharField( max_length = 244, choices=BRANCH_CHOICE, null=True, blank=True)
+    year = models.SmallIntegerField(choices=YEAR, null=True, blank=True)
     events = models.ManyToManyField("events.Events",related_name="events", blank=True)
     # score = models.ForeignKey(Score, on_delete=models.CASCADE, blank=True, null=True)
 
