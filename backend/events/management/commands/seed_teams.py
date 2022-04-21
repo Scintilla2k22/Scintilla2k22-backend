@@ -51,14 +51,18 @@ def create_team(row):
 
 """ Teams seeding"""
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument('--mode', type=str, help="Mode")
 
-    def _create_tags(self):
+    def _create_tags(self, mode):
         # r_path = os.path.join(settings.BASE_DIR,'static/teams.csv')
         df= pd.read_csv(TEAM_URL)
-        # clear_team()
+        if mode == "clear":
+            print("clear command  executed")
+            clear_team()
         for index, row in df.iterrows():
             create_team(row)
 
-
     def handle(self, *args, **options):
-        self._create_tags()
+        mode = options.get("mode", "refresh")
+        self._create_tags(mode)

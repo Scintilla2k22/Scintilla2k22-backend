@@ -49,13 +49,18 @@ def create_coords(row):
 
 """ Coordinates seed"""
 class Command(BaseCommand):
-
-    def _create_tags(self):
+    def add_arguments(self, parser):
+        parser.add_argument('--mode', type=str, help="Mode")
+    def _create_tags(self, mode):
         r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
         df = pd.read_csv(COORD_URL)
-        clear_coord()
+        if mode == "clear":
+            print("clear command executed")
+            clear_coord()
         for index, row in df.iterrows():
             create_coords(row)
+    
 
     def handle(self, *args, **options):
-        self._create_tags()
+        mode = options.get("mode", "refresh")
+        self._create_tags(mode)

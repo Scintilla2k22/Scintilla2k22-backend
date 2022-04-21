@@ -47,13 +47,21 @@ def create_events(row):
 
 """ Coordinates seed"""
 class Command(BaseCommand):
-
-    def _create_tags(self):
+    def add_arguments(self, parser):
+        parser.add_argument('--mode', type=str, help="Mode")
+    def _create_tags(self, mode):
         r_path = os.path.join(settings.BASE_DIR,'static/events.csv')
         df = pd.read_csv(r_path)
-        # clear_events()
+
+     
+
+        if mode == "clear":
+            print("clear command  executed")
+            clear_events()
         for index, row in df.iterrows():
             create_events(row)
 
+
     def handle(self, *args, **options):
-        self._create_tags()
+        mode = options.get("mode", "refresh")
+        self._create_tags(mode)
