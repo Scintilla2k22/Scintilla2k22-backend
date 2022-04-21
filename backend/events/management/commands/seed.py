@@ -205,13 +205,13 @@ def run_seed(self, mode):
 
     # Event Seeding ####################
 
-    r_path = os.path.join(settings.BASE_DIR,'static/events.csv')
-    df = pd.read_csv(r_path)
-    # clear_data()
-    if mode == MODE_CLEAR:
-        return
-    for index, row in df.iterrows():
-        create_events(row)
+    # r_path = os.path.join(settings.BASE_DIR,'static/events.csv')
+    # df = pd.read_csv(r_path)
+    # # clear_data()
+    # if mode == MODE_CLEAR:
+    #     return
+    # for index, row in df.iterrows():
+    #     create_events(row)
 
     ####################################
 
@@ -225,8 +225,8 @@ def run_seed(self, mode):
     # clear_coord()
     if mode == MODE_CLEAR:
         return
-    for index, row in df.iterrows():
-        create_coords(row)
+    # for index, row in df.iterrows():
+    #     create_coords(row)
 
     ######################################
 
