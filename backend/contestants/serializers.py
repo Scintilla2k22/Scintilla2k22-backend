@@ -23,6 +23,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 class ContestantsListSerializers(serializers.ModelSerializer):
 
     score = serializers.SerializerMethodField()
+    year =  serializers.CharField(source='get_year_display')
     class Meta:
         model = Contestants
         fields = '__all__'    
