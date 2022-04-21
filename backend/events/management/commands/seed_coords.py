@@ -39,7 +39,8 @@ def create_coords(row):
         "contact_number" : str(row.get("contact_number")).replace(" ", "")[-10:],
 
     }
-    user = Coordinators(**payload)
+    user = Coordinators.objects.update_or_create(**payload)
+    user = user[0]
     user.set_password(payload["username"])
     user.save()
     for event in events:
