@@ -26,10 +26,10 @@ class Command(BaseCommand):
         parser.add_argument('--mode', type=str, help="Mode")
 
     def _create_tags(self, mode):
-        call_command('seed_coords', mode = mode)
-        call_command('seed_teams', mode = mode)
         call_command(f'seed_events', mode = mode)
+        call_command('seed_coords', mode = mode)
         call_command('seed_contestants', mode = mode)
+        call_command('seed_teams', mode = mode)
       
     def handle(self, *args, **options):
         mode = options.get("mode", "refresh")
