@@ -73,20 +73,23 @@ def create_team(row):
     row = dict(row)
     contnt_lis = []
     try:
-        for cords in map(str, str(row["contestants"] ).split(',')):
-            cords = cords.strip()
-            c = Contestants.objects.all().filter(contact_number = cords)
-            if c.exists():
-                contnt_lis.append(c.first().id)
+        for cont in map(str, str(row["contestants"] ).split('#')):
+            cont = cont.strip()
+            if cont:
+                c = Contestants.objects.all().filter(contact_number = cont[-10:])
+                if c.exists():
+                    contnt_lis.append(c.first().id)
+            
+        
+
     except:
         traceback.print_exc()
 
-    payload = {
-        "t_name" : row.get("t_name"),
-    }
+   
 
 
     try :
+        payload = {"t_name" : row.get("t_name")}
         event = Events.objects.all().filter(code = row.get("event") )
         if(event.exists()):
             payload["event"] = event.first()
@@ -97,6 +100,7 @@ def create_team(row):
         res.save()
     except:
         print("error")
+        
     return res
 
 
