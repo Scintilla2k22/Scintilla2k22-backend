@@ -146,15 +146,24 @@ def create_contestants(row):
     event_lis = []
     event_obj_lis = []
     try:
-        for events in map(str, row["events"].strip().split(',')):
-            events = events.strip()
-            c = Events.objects.all().filter(e_name = events)
-            if c.exists():
-                event_obj_lis.append(c.first())
-                event_lis.append(c.first().id)
-    except:
+        ev_list = row.get("events_participating", "").split(',')
+        for event  in ev_list:
+            ev = event.split('-')[0].strip()
+            ev = Events.objects.all().filter(code = ev)
+            event_lis.append(ev.first().id)
+            event_obj_lis.append(ev.first())
+    except :
         traceback.print_exc()
-        print("nan")
+    # try:
+    #     for events in map(str, row["events"].strip().split(',')):
+    #         events = events.strip()
+    #         c = Events.objects.all().filter(e_name = events)
+    #         if c.exists():
+    #             event_obj_lis.append(c.first())
+    #             event_lis.append(c.first().id)
+    # except:
+    #     traceback.print_exc()
+    #     print("nan")
 
     payload = {
         "name" : row.get("name"),
@@ -216,7 +225,7 @@ def run_seed(self, mode):
 
     # Contestants Seeding 
 
-    r_path = os.path.join(settings.BASE_DIR,'static/contestant.csv')
+    r_path = os.path.join(settings.BASE_DIR,'static/contestants.csv')
 
     df = pd.read_csv(r_path)
     
