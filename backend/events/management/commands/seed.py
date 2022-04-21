@@ -11,6 +11,12 @@ from django.utils import timezone
 MODE_REFRESH = 'refresh'
 MODE_CLEAR = 'clear'
 
+
+cont_url = "https://docs.google.com/spreadsheets/d/1F2mos7YdqW8FqUl0HqULTi24sUPoPo-zlQJImQiwLgM/edit#gid=74408774".replace('/edit#gid=', '/export?format=csv&gid=')
+team_url = "https://docs.google.com/spreadsheets/d/1_IKFc6MH-1ldSWTPH6oRXZMwvDfEhJG6oMsQbRNpz4U/edit#gid=1299875194".replace('/edit#gid=', '/export?format=csv&gid=')
+coord_url ="https://docs.google.com/spreadsheets/d/1hUdUKn02jh0OcIG_6FQshchYPs4SkrNgG3sxr-H4fyk/edit#gid=1700464238".replace('/edit#gid=', '/export?format=csv&gid=')
+
+
 class Command(BaseCommand):
     help = "seed database for testing "
 
@@ -25,7 +31,7 @@ class Command(BaseCommand):
 
 def clear_data():
     """Deletes all the table data"""
-    Contestants.objects.all().delete()
+    Events.objects.all().delete()
 
 def clear_coord():
     Coordinators.objects.all().filter(is_superuser = False).delete()
@@ -50,13 +56,13 @@ def create_coords(row):
     
 
     payload = {
-        "username" : str(row.get("contact_number")).strip()[-10:],
+        "username" : str(row.get("contact_number")).replace(" ", "")[-10:],
         'first_name' : row.get("name"),
         'email' : row.get("email"),
         'gender' : row.get("gender"),
         'branch' : row.get("branch"),
         'year' : row.get("year"),
-        "contact_number" : str(row.get("contact_number"))[-10:],
+        "contact_number" : str(row.get("contact_number")).replace(" ", "")[-10:],
 
     }
     user = Coordinators(**payload)
@@ -74,23 +80,27 @@ def create_team(row):
     contnt_lis = []
     try:
         for cont in map(str, str(row["contestants"] ).split('#')):
-            cont = cont.strip()
+            cont = cont.replace(" ", "")[-10:]
             if cont:
-                c = Contestants.objects.all().filter(contact_number = cont[-10:])
+                c = Contestants.objects.all().filter(contact_number = cont)
                 if c.exists():
                     contnt_lis.append(c.first().id)
     except:
         traceback.print_exc()
     try :
-        payload = {"t_name" : row.get("t_name")}
+        payload = {"t_name" : row.get("t_name").strip()}
         event = Events.objects.all().filter(code = row.get("event").split('-')[0].strip() )
         if(event.exists()):
             payload["event"] = event.first()
-        res = Teams(**payload)
-        res.save()
-        res.contestants.add(*contnt_lis)
-        print("Team created - ", payload["t_name"])
-        res.save()
+        res = Teams.objects.get_or_create(t_name = payload["t_name"])
+        if res:
+            res = res[0]
+            if payload.get("event", False):
+                res.event = payload["event"]
+            res.save()
+            res.contestants.add(*contnt_lis)
+            print("Team created - ", payload["t_name"])
+            res.save()
     except:
         print("error")
 
@@ -167,7 +177,7 @@ def create_contestants(row):
         "name" : row.get("name"),
         "branch" : row.get("branch"),
         "year" : row.get("year"),
-        "contact_number" : row.get("contact_number"),
+        "contact_number" : row.get("contact_number").replace(" ", "")[-10:],
     }
      
     res = Contestants.objects.get_or_create(contact_number = payload["contact_number"])
@@ -218,7 +228,7 @@ def run_seed(self, mode):
     # Coordinators Seeding  ###############
 
     # r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
-    # df = pd.read_csv(r_path)
+    # df = pd.read_csv(coord_url)
     # clear_coord()
     # if mode == MODE_CLEAR:
     #     return
@@ -232,7 +242,7 @@ def run_seed(self, mode):
 
     r_path = os.path.join(settings.BASE_DIR,'static/contestants.csv')
 
-    df = pd.read_csv(r_path)
+    df = pd.read_csv(cont_url)
     
     clear_data_contestants()
     if mode == MODE_CLEAR:
@@ -248,7 +258,7 @@ def run_seed(self, mode):
     
     r_path = os.path.join(settings.BASE_DIR,'static/teams.csv')
 
-    df= pd.read_csv(r_path)
+    df= pd.read_csv(team_url)
     clear_team()
     if mode == MODE_CLEAR:
         return
