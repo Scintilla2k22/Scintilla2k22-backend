@@ -83,7 +83,7 @@ def create_team(row):
         traceback.print_exc()
     try :
         payload = {"t_name" : row.get("t_name")}
-        event = Events.objects.all().filter(code = row.get("event") )
+        event = Events.objects.all().filter(code = row.get("event").split('-')[0].strip() )
         if(event.exists()):
             payload["event"] = event.first()
         res = Teams(**payload)
