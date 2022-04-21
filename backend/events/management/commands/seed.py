@@ -171,16 +171,20 @@ def create_contestants(row):
         "year" : row.get("year"),
         "contact_number" : row.get("contact_number"),
     }
- 
-    res = Contestants(**payload)
+     
+    res = Contestants.objects.get_or_create(contact_number = payload["contact_number"])
+    res.name = payload["name"]
+    res.branch = payload["branch"]
+    res.year = payload["year"]
     res.save()
     print("  Contestant added -- ",payload["name"])
     res.events.add(*event_lis)
     # res.score.add(*score_lis)
     res.save()
-    for ev in event_obj_lis:
-        sc = Score(participants = res, score = 1, event = ev)
-        sc.save()
+
+    # for ev in event_obj_lis:
+    #     sc = Score(participants = res, score = 1, event = ev)
+    #     sc.save()
     # logger.info("{} res created.".format(res))
     return res
 
@@ -199,11 +203,11 @@ def run_seed(self, mode):
 
     r_path = os.path.join(settings.BASE_DIR,'static/events.csv')
     df = pd.read_csv(r_path)
-    clear_data()
+    # clear_data()
     if mode == MODE_CLEAR:
         return
-    for index, row in df.iterrows():
-        create_events(row)
+    # for index, row in df.iterrows():
+    #     create_events(row)
 
     ####################################
 
@@ -214,11 +218,11 @@ def run_seed(self, mode):
 
     r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
     df = pd.read_csv(r_path)
-    clear_coord()
+    # clear_coord()
     if mode == MODE_CLEAR:
         return
-    for index, row in df.iterrows():
-        create_coords(row)
+    # for index, row in df.iterrows():
+    #     create_coords(row)
 
     ######################################
 
