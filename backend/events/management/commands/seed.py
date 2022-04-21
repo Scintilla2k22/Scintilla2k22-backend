@@ -217,13 +217,13 @@ def run_seed(self, mode):
 
     # Coordinators Seeding  ###############
 
-    r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
-    df = pd.read_csv(r_path)
-    clear_coord()
-    if mode == MODE_CLEAR:
-        return
-    for index, row in df.iterrows():
-        create_coords(row)
+    # r_path = os.path.join(settings.BASE_DIR,'static/coordinators.csv')
+    # df = pd.read_csv(r_path)
+    # clear_coord()
+    # if mode == MODE_CLEAR:
+    #     return
+    # for index, row in df.iterrows():
+    #     create_coords(row)
 
     ######################################
 
