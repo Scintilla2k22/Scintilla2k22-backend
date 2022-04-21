@@ -45,12 +45,12 @@ def create_coords(row):
             ev = get_object_or_404(Events, code = ev)
             events.append(ev)
     except :
-        traceback.print_exc()
+        print("event not found")
     
     
 
     payload = {
-        "username" : str(row.get("contact_number"))[-10:],
+        "username" : str(row.get("contact_number")).strip()[-10:],
         'first_name' : row.get("name"),
         'email' : row.get("email"),
         'gender' : row.get("gender"),
