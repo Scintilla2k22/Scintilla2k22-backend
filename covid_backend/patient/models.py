@@ -102,6 +102,8 @@ class PatientProfile(TimeStamped):
         ordering = ['updated_on']
      
 
+    
+
     def __str__(self):
         return "Patient ID : {0}, name : {1} , status : {2}".format(self.patient_id, self.name, self.get_patient_status_display())
 

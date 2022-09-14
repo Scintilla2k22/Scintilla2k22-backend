@@ -5,7 +5,8 @@ from rest_framework.fields import NOT_READ_ONLY_WRITE_ONLY
 from .models import *
 from django.conf import settings
 from django.utils import timezone
-
+from health.models import *
+from health.serializers import *
 User = settings.AUTH_USER_MODEL
 
 
@@ -132,7 +133,6 @@ class PatientMigrateSerializers(serializers.ModelSerializer):
         return migrate
 
 class PatientDeathSerializers(serializers.ModelSerializer):
-    
     patient_id = serializers.CharField()
     class Meta:
         model = PatientDeath         
@@ -186,12 +186,34 @@ class PatientProfileSerializers(serializers.ModelSerializer):
     patient_death = PatientDeathSerializers(read_only=True)
     patient_covid_test = PatientCovidTestSerializers()
     patient_vaccine_status = PatientVaccinationSerializers()
+    patient_health_status =  serializers.SerializerMethodField()
+    patient_condition = serializers.SerializerMethodField()
+    patient_status_display = serializers.SerializerMethodField()
+ 
 
     class Meta:
         model = PatientProfile
-        fields = ['id', 'patient_id', 'admitted_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status', 'covid_facility','health_condition', 'patient_bed',  'patient_migrate','patient_death',  'covid_status', 'remark', 'patient_covid_test', 'patient_vaccine_status'] 
+        fields = ['id','patient_condition', 'patient_id', 'admitted_on', 'updated_on', 'name', 'gender', 'age', 'contact_number', 'address', 'patient_status_display',"patient_status", 'covid_facility','health_condition', 'patient_bed',  'patient_migrate','patient_death',  'covid_status', 'remark', 'patient_covid_test', 'patient_vaccine_status', 'patient_health_status'] 
         # fields = "__all__"
-        # extra_kwargs = {'bed_number': {'write_only': True}, 'bed_category' : {"write_only" : True}}
+        extra_kwargs = {'patient_status': {'write_only': True}, }
+  
+    def get_patient_health_status(self, obj):
+        hs =  HealthStatus.objects.filter(patient = obj)
+        if hs.exists():
+            hs = hs.first()
+            return hs.get_current_health
+        return 0
+
+    def get_patient_status_display(self, obj):
+        return obj.get_patient_status_display()
+
+    def get_patient_condition(self, obj):
+        hs =  HealthStatus.objects.filter(patient = obj)
+        if hs.exists():
+            hs = hs.first()
+            return hs.get_patient_condition
+        return "NA"
+
 
     def validate(self, attr):
         
@@ -326,3 +348,12 @@ class PatientStatusSerializer(serializers.Serializer):
         return attr
     
     
+
+
+class PatientProfileCountSerializers(serializers.ModelSerializer): 
+    created_count = serializers.IntegerField()
+    class Meta:
+        model = PatientProfile
+        fields = ("created_count",)
+        pass
+  

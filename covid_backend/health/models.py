@@ -16,7 +16,7 @@ class HealthStatus(TimeStamped):
         ("1", ("Asymptomataic")),
         ("2", ("Mild")),
         ("3", ("Moderate")),
-        ("4", ("severe"))
+        ("4", ("Severe"))
     )
 
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE)
@@ -36,6 +36,20 @@ class HealthStatus(TimeStamped):
         return "Patient : {0} | PC : {1} | OL : {2}% | BP : {3}/{4} mm Hg | PR : {5}bpm | T : {6}F | RR : {7} ".format(self.patient.patient_id,self.get_patient_condition_display(), \
         self.oxy_level, self.blood_pres_systolic, self.blood_pres_diastolic, self.pulse_rate, self.temperature, self.respiration_rate)
 
+    @property
+    def get_patient_condition(self):
+        return self.get_patient_condition_display()
+
+    @property
+    def get_current_health(self):
+        return {
+            "OL" : self.oxy_level,
+            # "BP" : f"{self.blood_pres_systolic}/{self.blood_pres_diastolic}",
+            "PR" : self.pulse_rate,
+            "RR" : self.respiration_rate,
+            "T" : self.temperature
+        }
+        
 
 @receiver(post_save, sender=HealthStatus)
 def update_health_condition(sender, instance=None, created=False, **kwargs):

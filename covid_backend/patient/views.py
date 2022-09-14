@@ -11,6 +11,9 @@ from rest_framework.permissions import IsAuthenticated
 from.models import *
 from django.utils.timezone import datetime
 from .paginations import *
+from django.db.models.functions import TruncDay
+from django.db.models import Count
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -60,9 +63,14 @@ class PatientProfileView(APIView):
  
 class PatientsList(generics.ListAPIView):
     permission_classes = [IsAuthenticated,]
-    queryset = PatientProfile.objects.all().filter(patient_status='A')
     serializer_class = PatientProfileSerializers
     pagination_class = PatientListPagination
+
+    def get_queryset(self):
+        query = self.kwargs.get('id',False) if not self.kwargs.get('id',False) else 'A'
+        queryset = PatientProfile.objects.all().filter(patient_status=query)
+        return queryset
+
 
 
 @permission_classes([IsAuthenticated])
@@ -137,15 +145,16 @@ def get_alloted_beds(request, **kwargs):
     serializers = PatientBedSerializers(total_alloted_bed, many=True)
 
     # for count of patients
-    total_recovered = PatientProfile.objects.filter(patient_status="R", updated_on__date=datetime.today().date())
-    total_migrated = PatientProfile.objects.filter(patient_status="M", updated_on__date=datetime.today().date())
-    total_death = PatientProfile.objects.filter(patient_status="D", updated_on__date=datetime.today().date())
-    total_isolated = PatientProfile.objects.filter(patient_status="H", updated_on__date = datetime.today().date())
-
+    total_recovered = PatientProfile.objects.filter(patient_status="R",)
+    total_migrated = PatientProfile.objects.filter(patient_status="M",)
+    total_death = PatientProfile.objects.filter(patient_status="D",)
+    total_isolated = PatientProfile.objects.filter(patient_status="H", )
+    total_active = PatientProfile.objects.filter(patient_status = 'A',  )
     patient_status = { "recovered" : total_recovered.count() , 
             "migrated" : total_migrated.count(),
             "death" : total_death.count(),
-            "home_isolated" : total_isolated.count()
+            "isolated" : total_isolated.count(),
+            "active" : total_active.count(),
             }
 
     alloted_beds = { "total" : total_alloted_bed.count() , 
@@ -250,5 +259,14 @@ def get_filter_patients(request, **kwargs):
     serializers = PatientProfileSerializers(patient_profile, many=True)
     if patient_profile.count()!=0:
         return Response({"data": serializers.data, "status": status.HTTP_200_OK})
+    else:
+        return Response({"data": "Not Found!", "status": status.HTTP_404_NOT_FOUND})
+
+
+@api_view(["GET"])
+def get_patient_count(request, **kwargs):
+    patient_profile = PatientProfile.objects.all().annotate(x=TruncDay('admitted_on')).values("x").annotate(y=Count('id')).order_by("-admitted_on")
+    if patient_profile.count()!=0:
+        return Response({"data": patient_profile , "status": status.HTTP_200_OK})
     else:
         return Response({"data": "Not Found!", "status": status.HTTP_404_NOT_FOUND})
